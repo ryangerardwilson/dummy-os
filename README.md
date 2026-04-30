@@ -16,10 +16,21 @@ The central metaphor:
 
 ## Scenes
 
+The main journey explains the whole OS structure:
+
 - Car story: introduces the car, road, and driving manual.
 - Road rules: shows primitives, guards, and parameters as laws, barriers, and speed limits.
 - Checkpoints: shows each OS as a checkpoint that owns one decision.
 - Wrong turn: shows why boundaries exist by blocking a shortcut.
+
+The deep-dive scenes explain confusing terms:
+
+- Primitives + guards: law plus blocker.
+- Parameters: tunable road settings like radius, wait time, and retry count.
+- State machine: allowed stops and legal next moves.
+- Events + logs: handoff slips and trip records.
+- Authority boundary: one owner checkpoint, no shortcut ownership theft.
+- Build spec: translation from OS doc to engineering instructions.
 
 ## Run
 

@@ -283,10 +283,26 @@ h1 {
 }
 
 .controls {
+  display: grid;
+  gap: 12px;
+}
+
+.control-group {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
+}
+
+.control-group p {
+  flex: 0 0 100%;
+  margin: 0 0 2px;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.09em;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .view-button {

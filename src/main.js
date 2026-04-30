@@ -35,6 +35,54 @@ const scenes = {
     lesson: 'If Support starts assigning partners directly, that is like a car jumping the lane divider. It may feel faster, but it breaks the road system.',
     camera: [0, 9.5, 16],
     target: [0, 0, 0]
+  },
+  termPrimitives: {
+    number: 'T1',
+    title: 'Primitives and guards',
+    summary: 'A primitive is a road law. A guard is the barrier that physically prevents breaking that law.',
+    lesson: 'Primitive = always true. Guard = block the illegal move. Put together, they keep the car from doing something that damages the business model.',
+    camera: [0, 9, 16],
+    target: [0, 0, 0]
+  },
+  termParameters: {
+    number: 'T2',
+    title: 'Parameters',
+    summary: 'A parameter is a road setting like speed limit, allowed radius, retry count, or wait time.',
+    lesson: 'Parameters are knobs. The rule stays the same, but the number can be tuned from a known place instead of hidden in code.',
+    camera: [0, 8.5, 15],
+    target: [0, 0, 0]
+  },
+  termState: {
+    number: 'T3',
+    title: 'State machine',
+    summary: 'A state machine is the allowed order of road stops. The car cannot jump from start to finish randomly.',
+    lesson: 'State tells you where the car is right now. Transitions tell you which next stops are legal.',
+    camera: [0, 9.5, 17],
+    target: [0, 0, 0]
+  },
+  termEvents: {
+    number: 'T4',
+    title: 'Events and logs',
+    summary: 'An event is a handoff slip. A log is the trip record that proves the handoff happened.',
+    lesson: 'Events let checkpoints talk without taking over each other’s job. Logs make the journey debuggable later.',
+    camera: [0, 9, 16],
+    target: [0, 0, 0]
+  },
+  termAuthority: {
+    number: 'T5',
+    title: 'Authority boundary',
+    summary: 'Authority means one checkpoint owns the decision. Boundary means others cannot sneak around it.',
+    lesson: 'If everyone can decide, nobody owns truth. Authority boundaries keep one official source for each decision.',
+    camera: [0, 9.5, 16],
+    target: [0, 0, 0]
+  },
+  termBuildSpec: {
+    number: 'T6',
+    title: 'Build spec',
+    summary: 'A build spec turns the driving manual into construction instructions for engineers.',
+    lesson: 'OS doc says what must be true. Build spec says how to build the road, signs, checkpoints, storage, and tests.',
+    camera: [0, 8.7, 15],
+    target: [0, 0, 0]
   }
 };
 
@@ -131,6 +179,12 @@ function setScene(sceneId) {
   if (sceneId === 'rules') buildRulesScene();
   if (sceneId === 'checkpoints') buildCheckpointScene();
   if (sceneId === 'wrongTurn') buildWrongTurnScene();
+  if (sceneId === 'termPrimitives') buildPrimitiveGuardTermScene();
+  if (sceneId === 'termParameters') buildParameterTermScene();
+  if (sceneId === 'termState') buildStateTermScene();
+  if (sceneId === 'termEvents') buildEventsTermScene();
+  if (sceneId === 'termAuthority') buildAuthorityTermScene();
+  if (sceneId === 'termBuildSpec') buildBuildSpecTermScene();
 
   camera.position.set(...config.camera);
   controls.target.set(...config.target);
@@ -319,13 +373,286 @@ function buildWrongTurnScene() {
   selectInfo(shortcutInfo);
 }
 
+function buildPrimitiveGuardTermScene() {
+  const primitiveInfo = info(
+    'LAW',
+    'Primitive',
+    'What is a primitive?',
+    'A primitive is a law the road must always obey.',
+    'Example: the system owns demand; no partner privately owns the customer.',
+    'If the car is allowed to break this law, the whole road stops meaning anything.'
+  );
+  const guardInfo = info(
+    'GUARD',
+    'Guard',
+    'What is a guard?',
+    'A guard is the physical blocker that prevents law-breaking movement.',
+    'Example: block double assignment, invalid state jump, or forbidden shortcut.',
+    'A primitive says the rule. A guard enforces the rule.'
+  );
+
+  addGround();
+  addRoad(15, 4.3, 0);
+  addRoadSign('LAW', -5.4, -3.15, palette.green, primitiveInfo);
+  addRoadSign('GUARD', 3.8, -3.15, palette.red, guardInfo);
+  addGuardRail(2.55, palette.red, guardInfo);
+
+  const badPath = box(4.2, 0.12, 1.05, palette.red, { x: 3.6, y: 0.08, z: 3.25, rotY: -0.28 });
+  badPath.userData.info = guardInfo;
+  interactiveMeshes.push(badPath);
+  root.add(badPath);
+
+  const car = createCar(info('CAR', 'Car obeying law', 'What is happening?', 'The car continues on the valid road because the guard blocks the bad road.', 'The OS doc describes both the law and the blocker.', 'This is why primitives and guards belong together.'), palette.teal);
+  car.position.set(-6.2, 0.45, 0);
+  root.add(car);
+
+  animated.push((elapsed) => {
+    car.position.x = THREE.MathUtils.lerp(-6.2, 5.4, loopProgress(elapsed, 0.16));
+  });
+
+  selectInfo(primitiveInfo);
+}
+
+function buildParameterTermScene() {
+  const parameterInfo = info(
+    'PARAM',
+    'Parameter',
+    'What is a parameter?',
+    'A parameter is a number you are allowed to tune without rewriting the rule.',
+    'Examples: radius = 25m, retry count = 3, wait window = 10 minutes.',
+    'Put knobs in one registry. Do not hide magic numbers inside random code.'
+  );
+
+  addGround();
+  addRoad(15, 4.3, 0);
+  addRoadSign('RADIUS 25m', -5.3, -3.15, palette.yellow, parameterInfo);
+  addRoadSign('RETRY 3', 0, -3.15, palette.yellow, parameterInfo);
+  addRoadSign('WAIT 10m', 5.3, -3.15, palette.yellow, parameterInfo);
+
+  [-5.3, 0, 5.3].forEach((x, index) => {
+    const knob = cylinder(0.52, 0.35, palette.yellow, { x, y: 0.28, z: 2.45 });
+    knob.userData.info = parameterInfo;
+    interactiveMeshes.push(knob);
+    root.add(knob);
+    animated.push((elapsed) => {
+      knob.rotation.y = elapsed * (0.7 + index * 0.18);
+    });
+  });
+
+  const car = createCar(info('CAR', 'Car under limits', 'What is happening?', 'The car still follows the same road, but the road settings affect allowed behavior.', 'Parameters tune the road without changing what the road means.', 'Same rule, governed knobs.'), palette.teal);
+  car.position.set(-6.2, 0.45, 0);
+  root.add(car);
+  animated.push((elapsed) => {
+    car.position.x = THREE.MathUtils.lerp(-6.2, 5.8, loopProgress(elapsed, 0.14));
+  });
+
+  selectInfo(parameterInfo);
+}
+
+function buildStateTermScene() {
+  const stateInfo = info(
+    'STATE',
+    'State',
+    'What is state?',
+    'State is the car’s current stop on the road.',
+    'Examples: requested, checked, promised, assigned, active.',
+    'If you know the state, you know what can legally happen next.'
+  );
+  const transitionInfo = info(
+    'NEXT',
+    'Transition',
+    'What is a transition?',
+    'A transition is an allowed move from one stop to the next.',
+    'Example: requested can move to checked; checked can move to promised.',
+    'A state machine prevents random jumps.'
+  );
+
+  addGround();
+  addRoad(18, 4.3, 0);
+  const stops = [
+    ['Requested', -7.2],
+    ['Checked', -3.6],
+    ['Promised', 0],
+    ['Assigned', 3.6],
+    ['Active', 7.2]
+  ];
+
+  stops.forEach(([label, x], index) => {
+    const stop = cylinder(0.68, 0.28, index === 0 ? palette.blue : palette.green, { x, y: 0.18, z: 0 });
+    stop.userData.info = stateInfo;
+    interactiveMeshes.push(stop);
+    root.add(stop);
+    addLabel(label, x, 0.75, 0, 'label label--station');
+    if (index < stops.length - 1) {
+      const segment = line(new THREE.Vector3(x + 0.8, 0.24, 0), new THREE.Vector3(stops[index + 1][1] - 0.8, 0.24, 0), palette.teal, 0.65);
+      segment.userData.info = transitionInfo;
+      root.add(segment);
+    }
+  });
+
+  const shortcut = box(5.8, 0.1, 0.8, palette.red, { x: 0, y: 0.12, z: 3.1, rotY: -0.12 });
+  shortcut.userData.info = transitionInfo;
+  interactiveMeshes.push(shortcut);
+  root.add(shortcut);
+  addRoadSign('NO JUMP', 0, 3.75, palette.red, transitionInfo);
+
+  const car = createCar(info('CAR', 'Stateful car', 'What is happening?', 'The car moves from stop to stop in a legal order.', 'Each stop is a state. Each road segment is a transition.', 'State machines are just legal journey maps.'), palette.teal);
+  car.position.set(-7.2, 0.45, 0);
+  root.add(car);
+  animated.push((elapsed) => {
+    car.position.x = THREE.MathUtils.lerp(-7.2, 7.2, loopProgress(elapsed, 0.11));
+  });
+
+  selectInfo(stateInfo);
+}
+
+function buildEventsTermScene() {
+  const eventInfo = info(
+    'EVENT',
+    'Event',
+    'What is an event?',
+    'An event is a handoff slip passed from one checkpoint to another.',
+    'Example: Coverage says serviceable, then Allocation can use that fact.',
+    'Events let checkpoints talk without stealing each other’s jobs.'
+  );
+  const logInfo = info(
+    'LOG',
+    'Event log',
+    'What is a log?',
+    'A log is the record that the handoff happened.',
+    'It captures the event, owner, time, and useful context.',
+    'Logs are how you debug the trip later.'
+  );
+
+  addGround();
+  addRoad(14, 4.3, 0);
+  addCheckpoint('Coverage', -4.7, palette.green, eventInfo, 0);
+  addCheckpoint('Allocation', 4.7, palette.green, eventInfo, 1);
+
+  const envelope = box(1.25, 0.42, 0.88, palette.paper, { x: -4.7, y: 0.58, z: 0 });
+  envelope.userData.info = eventInfo;
+  interactiveMeshes.push(envelope);
+  root.add(envelope);
+  addLabel('event slip', -4.7, 1.15, 0, 'label label--paper');
+
+  const logbook = box(2.3, 0.36, 1.3, palette.violet, { x: 0, y: 0.25, z: 3.15, rotY: 0.1 });
+  logbook.userData.info = logInfo;
+  interactiveMeshes.push(logbook);
+  root.add(logbook);
+  addLabel('log', 0, 0.78, 3.15, 'label label--station');
+
+  animated.push((elapsed) => {
+    const phase = loopProgress(elapsed, 0.22);
+    envelope.position.x = THREE.MathUtils.lerp(-4.7, 4.7, phase);
+    envelope.position.y = 0.58 + Math.sin(elapsed * 7) * 0.025;
+  });
+
+  selectInfo(eventInfo);
+}
+
+function buildAuthorityTermScene() {
+  const authorityInfo = info(
+    'OWNER',
+    'Authority',
+    'What is authority?',
+    'Authority means one checkpoint is the official owner of a decision.',
+    'Example: Allocation owns who serves the customer.',
+    'The owner checkpoint produces the truth others should consume.'
+  );
+  const boundaryInfo = info(
+    'BOUND',
+    'Boundary',
+    'What is a boundary?',
+    'A boundary says other checkpoints cannot make this decision by shortcut.',
+    'Example: Support cannot directly assign a partner.',
+    'Boundaries keep the road honest.'
+  );
+
+  addGround();
+  addRoad(16, 4.3, 0);
+  addCheckpoint('Authority: Allocation', 0, palette.green, authorityInfo, 0);
+  addRoadSign('OWNER', 0, -3.3, palette.green, authorityInfo);
+
+  const sideRoad = box(7.2, 0.12, 1.25, palette.red, { x: 1.6, y: 0.08, z: 3.05, rotY: -0.45 });
+  const barrier = box(0.28, 1.1, 3.4, palette.red, { x: -0.6, y: 0.62, z: 2.0, rotY: -0.45 });
+  [sideRoad, barrier].forEach((mesh) => {
+    mesh.userData.info = boundaryInfo;
+    interactiveMeshes.push(mesh);
+    root.add(mesh);
+  });
+  addRoadSign('BOUNDARY', -0.8, 3.7, palette.red, boundaryInfo);
+
+  const car = createCar(info('CAR', 'Car routed to owner', 'What is happening?', 'The car is forced through the checkpoint that owns the decision.', 'The bad shortcut exists visually, but the barrier blocks it.', 'Authority is useful only if the boundary is enforced.'), palette.teal);
+  car.position.set(-5.6, 0.45, 0);
+  root.add(car);
+  animated.push((elapsed) => {
+    car.position.x = THREE.MathUtils.lerp(-5.6, 2.9, loopProgress(elapsed, 0.15));
+  });
+
+  selectInfo(authorityInfo);
+}
+
+function buildBuildSpecTermScene() {
+  const osInfo = info(
+    'OS',
+    'OS doc',
+    'What does the OS doc say?',
+    'It says what must be true on the road.',
+    'Ownership, rules, states, events, parameters, and forbidden moves.',
+    'This is the policy manual.'
+  );
+  const specInfo = info(
+    'SPEC',
+    'Build spec',
+    'What is a build spec?',
+    'It turns the manual into construction instructions.',
+    'Tables, endpoints, event handlers, state transitions, and tests.',
+    'This is the bridge from policy to code.'
+  );
+  const codeInfo = info(
+    'CODE',
+    'Running service',
+    'What does engineering build?',
+    'The actual road, signs, barriers, and checkpoints the car uses.',
+    'A service that follows the build spec and proves it with tests.',
+    'Code should implement the manual, not invent its own road.'
+  );
+
+  addGround();
+  const blocks = [
+    ['OS doc', -5.4, palette.paper, osInfo],
+    ['Build spec', 0, palette.yellow, specInfo],
+    ['Code service', 5.4, palette.blue, codeInfo]
+  ];
+
+  blocks.forEach(([label, x, color, infoObject]) => {
+    const block = box(3.2, 0.55, 2.15, color, { x, y: 0.32, z: 0 });
+    block.userData.info = infoObject;
+    interactiveMeshes.push(block);
+    root.add(block);
+    addLabel(label, x, 0.92, 0, 'label label--station');
+  });
+
+  root.add(line(new THREE.Vector3(-3.55, 0.45, 0), new THREE.Vector3(-1.85, 0.45, 0), palette.teal, 0.65));
+  root.add(line(new THREE.Vector3(1.85, 0.45, 0), new THREE.Vector3(3.55, 0.45, 0), palette.teal, 0.65));
+
+  const car = createCar(info('CAR', 'Idea becomes road', 'What is moving?', 'The idea moves from policy to spec to code.', 'Each step makes the instruction more buildable.', 'A build spec is not extra paperwork; it is translation.'), palette.teal);
+  car.position.set(-6.8, 0.9, 2.7);
+  root.add(car);
+  animated.push((elapsed) => {
+    car.position.x = THREE.MathUtils.lerp(-6.8, 6.8, loopProgress(elapsed, 0.12));
+  });
+
+  selectInfo(specInfo);
+}
+
 function checkpointInfo(code, name, question, plain) {
   return info(
     code,
     name,
     question,
     plain,
-    'One checkpoint owns one decision and stamps the trip before passing the car onward.',
+    'One checkpoint owns one decision before passing the car onward.',
     'Do not let another checkpoint quietly do this job.'
   );
 }

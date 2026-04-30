@@ -70,10 +70,23 @@
         </section>
 
         <footer class="controls" aria-label="Visual scene controls">
-          <button class="view-button is-active" data-scene="car">1. Car story</button>
-          <button class="view-button" data-scene="rules">2. Road rules</button>
-          <button class="view-button" data-scene="checkpoints">3. Checkpoints</button>
-          <button class="view-button" data-scene="wrongTurn">4. Wrong turn</button>
+          <div class="control-group">
+            <p>Overview journey</p>
+            <button class="view-button is-active" data-scene="car">1. Car story</button>
+            <button class="view-button" data-scene="rules">2. Road rules</button>
+            <button class="view-button" data-scene="checkpoints">3. Checkpoints</button>
+            <button class="view-button" data-scene="wrongTurn">4. Wrong turn</button>
+          </div>
+
+          <div class="control-group">
+            <p>Deep dive terms</p>
+            <button class="view-button" data-scene="termPrimitives">Primitives + guards</button>
+            <button class="view-button" data-scene="termParameters">Parameters</button>
+            <button class="view-button" data-scene="termState">State machine</button>
+            <button class="view-button" data-scene="termEvents">Events + logs</button>
+            <button class="view-button" data-scene="termAuthority">Authority boundary</button>
+            <button class="view-button" data-scene="termBuildSpec">Build spec</button>
+          </div>
         </footer>
       </section>
     </main>
