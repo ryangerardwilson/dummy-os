@@ -21,13 +21,14 @@ The central metaphor:
 
 ## Scenes
 
-The page is organized into five sections:
+The page is organized into six sections:
 
 - 1. Wiom OS Basic Concepts: explains one customer request as a car moving through the road.
 - 2. If you only need to remember 3 things ...: stitches the car metaphor back to the OS document structure.
 - 3. The Wiom OS Universe: animates the wider Wiom system of demand, supply, assets, money, quality, support, and access.
 - 4. Read the map from authority to artifact: explains the taxonomy order.
 - 5. The real OS authorities people are confused by: maps the actual OS authorities.
+- 6. Non-OS Components: explains important artifacts and implementations that are not OS authorities.
 
 The main micro journey explains the single-customer flow:
 
@@ -40,15 +41,21 @@ The remaining deep-dive scenes explain confusing terms:
 - Parameters: the number on a sign, such as speed limit 30 vs 60, where the rule stays the same but behavior changes.
 - State machine: a car wash conveyor where the car moves Queue → Soap → Rinse → Dry → Done.
 
-The text sections then stitch the metaphor back to Satyam's actual OS map:
+The text sections then stitch the metaphor back to Satyam's actual OS map.
 
-- Commitment Decision Spec (formerly Genie): bounded subsystem / decision spec governed at Tier 3 because promise decisions can affect trust, routing, lifecycle handoff, and failure modes. Not an OS. "Tier 3 subsystem" means it needs Tier 3 governance, not that it is a third type of subsystem.
+OS authorities:
+
 - CL OS: what state is the connection in?
 - D&A OS: who should serve the connection?
 - Capacity & Coverage OS: where can Wiom serve, who is eligible, and how much capacity exists?
 - Asset Custody Lifecycle OS: the OS authority for device custody truth.
-- Asset Custody Service / ACS: the service implementation of the Asset Custody OS.
 - Quality, Enforcement, Exit, Compensation, Payment, Support, and CAEO: the adjacent authorities that own execution truth, posture, closure, money, complaint truth, and customer access truth.
+
+Non-OS components:
+
+- Commitment Decision Spec (formerly Genie): bounded subsystem / decision spec governed at Tier 3 because promise decisions can affect trust, routing, lifecycle handoff, and failure modes.
+- Asset Custody Service / ACS: the service implementation of the Asset Custody OS.
+- Specs, contracts, services, signals, and parameters: rules, code, events, and tunable values that support OS authorities without owning lifecycle truth.
 
 Visual system follows Wiom brand basics: Noto Sans, Wiom Pink `#E5178F`,
 black, white, and neutral gray.

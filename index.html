@@ -200,21 +200,6 @@
             </article>
           </div>
 
-          <div class="classification-strip" aria-label="Common classification fixes">
-            <p>
-              <strong>Commitment Decision Spec (formerly Genie)</strong>:
-              bounded subsystem governed at Tier 3 because promise decisions
-              affect trust, routing, lifecycle handoff, and failure modes. Not an OS.
-            </p>
-            <p>
-              <strong>Asset Custody Lifecycle</strong>: OS authority. It owns
-              device custody truth.
-            </p>
-            <p>
-              <strong>Asset Custody Service / ACS</strong>: service implementation
-              of the Asset Custody OS.
-            </p>
-          </div>
         </section>
 
         <section class="detail-brief" aria-labelledby="detailBriefTitle">
@@ -230,20 +215,6 @@
           </div>
 
           <div class="authority-map" aria-label="Actual Satyam OS authorities">
-            <article class="authority-card authority-card--featured">
-              <span>Tier 3 subsystem</span>
-              <h3>Commitment Decision Spec (formerly Genie)</h3>
-              <p>
-                Owns the question: <strong>should Wiom promise service here?</strong>
-                It returns COMMIT, DEFER, or REJECT using declared inputs only.
-              </p>
-              <p>
-                Important: Satyam did not accept this as a full OS. He accepted
-                it as a bounded decision spec / subsystem. Tier 3 is the
-                governance level because the promise decision changes system behavior.
-              </p>
-            </article>
-
             <article class="authority-card">
               <span>CL OS</span>
               <h3>Connection Lifecycle</h3>
@@ -387,93 +358,9 @@
             </article>
           </div>
 
-          <div class="handoff-strip" aria-label="Customer journey through actual OSes">
-            <h3>For a dummy, read the handoff like this</h3>
-            <p>
-              Commitment Decision Spec (formerly Genie) is a bounded subsystem
-              governed at Tier 3 because it says whether Wiom should promise.
-              CL creates and tracks the
-              connection. D&amp;A chooses who serves. Capacity &amp; Coverage tells D&amp;A
-              what supply is real. Quality measures execution. Enforcement
-              changes CSP posture. Exit closes bad or voluntary departures.
-              Compensation calculates money. Payment moves money. Support
-              converts complaints into quality truth. CAEO tells the customer
-              whether internet should work right now.
-            </p>
-          </div>
-
-          <div class="detail-flow" aria-label="How the major OSes hand off">
-            <article class="detail-row">
-              <div>
-                <span>Handoff 1</span>
-                <h3>Promise to connection</h3>
-              </div>
-              <p>
-                Commitment Decision Spec (formerly Genie) decides whether Wiom
-                can safely say yes. It is a bounded subsystem, not the lifecycle
-                owner. It is Tier 3 because a wrong yes/no can affect trust and
-                downstream routing. If the answer is COMMIT, the journey can
-                create a connection request.
-              </p>
-              <p>
-                CL OS then owns the connection lifecycle. From that point, the
-                customer car is no longer just a lead; it is a governed connection object.
-              </p>
-            </article>
-
-            <article class="detail-row">
-              <div>
-                <span>Handoff 2</span>
-                <h3>Connection to allocation</h3>
-              </div>
-              <p>
-                CL emits the structural event. D&amp;A consumes it and decides the
-                serving CSP using the routing engine.
-              </p>
-              <p>
-                D&amp;A reads Capacity &amp; Coverage for zone/eligibility/capacity truth
-                and reads Quality/Enforcement signals for CSP posture.
-              </p>
-            </article>
-
-            <article class="detail-row">
-              <div>
-                <span>Handoff 3</span>
-                <h3>Execution to consequences</h3>
-              </div>
-              <p>
-                After service starts, Quality decides whether execution is good
-                or degraded. Support feeds it complaint-resolution truth.
-              </p>
-              <p>
-                Enforcement consumes sustained Quality truth and integrity events
-                to decide whether a CSP remains clear, restricted, suspended, or
-                pushed toward exit.
-              </p>
-            </article>
-
-            <article class="detail-row">
-              <div>
-                <span>Handoff 4</span>
-                <h3>Money and access</h3>
-              </div>
-              <p>
-                Compensation computes what the CSP has earned. Payment executes
-                settlement and wallet movement from those entitlement records.
-              </p>
-              <p>
-                CAEO resolves the customer-facing access truth, so the app or
-                captive portal does not guess from payment or supply fragments.
-              </p>
-            </article>
-          </div>
-
           <div class="question-strip" aria-label="Questions the OS map should answer">
             <h3>If someone is confused, ask which OS owns the truth</h3>
             <ul>
-              <li>Should Wiom promise? Commitment Decision Spec.</li>
-              <li>Is it a full OS or a bounded subsystem? Check whether it owns lifecycle truth.</li>
-              <li>What tier is the change? Tier 1 polish, Tier 2 local behavior, Tier 3 system risk.</li>
               <li>What state is the connection in? CL OS.</li>
               <li>Who should serve it? D&amp;A OS.</li>
               <li>Where can we serve and at what capacity? Capacity &amp; Coverage OS.</li>
@@ -485,6 +372,71 @@
               <li>Who moves the money? Payment OS.</li>
               <li>What should the customer app show? CAEO.</li>
             </ul>
+          </div>
+        </section>
+
+        <section class="detail-brief" aria-labelledby="nonOsBriefTitle">
+          <div class="detail-brief__header">
+            <p class="eyebrow">Non-OS Components</p>
+            <h2 id="nonOsBriefTitle">6. Non-OS Components</h2>
+            <p>
+              These are still important, but they do not own lifecycle truth.
+              They support OS authorities, implement them, or define controlled
+              decisions and handoffs.
+            </p>
+          </div>
+
+          <div class="authority-map" aria-label="Important non-OS components">
+            <article class="authority-card">
+              <span>Decision spec / subsystem</span>
+              <h3>Commitment Decision Spec (formerly Genie)</h3>
+              <p>
+                Answers one bounded question:
+                <strong>should Wiom promise service here?</strong>
+              </p>
+              <p>
+                It can affect trust, routing, lifecycle handoff, and failure
+                modes, so changes need Tier 3 governance. It is not an OS.
+              </p>
+            </article>
+
+            <article class="authority-card">
+              <span>Service implementation</span>
+              <h3>Asset Custody Service / ACS</h3>
+              <p>
+                Implements pieces of the Asset Custody OS in software.
+              </p>
+              <p>
+                The OS owns custody truth. The service executes part of that
+                authority; it is not a separate OS.
+              </p>
+            </article>
+
+            <article class="authority-card">
+              <span>Rule artifact</span>
+              <h3>Specs and contracts</h3>
+              <p>
+                A spec is the written rule for how something should work. A
+                contract says how two authorities exchange inputs and outputs.
+              </p>
+              <p>
+                Specs and contracts govern behavior, but they do not own
+                lifecycle truth by themselves.
+              </p>
+            </article>
+
+            <article class="authority-card">
+              <span>Implementation pieces</span>
+              <h3>Services, signals, parameters</h3>
+              <p>
+                Services are code that runs. Signals are events that move.
+                Parameters are tunable values like thresholds, caps, and time windows.
+              </p>
+              <p>
+                They are useful parts of the machine, but they are not OS
+                authorities.
+              </p>
+            </article>
           </div>
         </section>
       </section>
