@@ -63,17 +63,17 @@ const scenes = {
 };
 
 const palette = {
-  asphalt: '#222c34',
-  lane: '#f2d36b',
-  grass: '#123629',
-  teal: '#5fffe1',
-  green: '#62d6a4',
-  yellow: '#f2b84b',
-  red: '#ff735c',
-  blue: '#7fc7ff',
-  violet: '#c9a7ff',
-  white: '#eef8ff',
-  paper: '#f4d7a1'
+  asphalt: '#1f1f23',
+  lane: '#ffffff',
+  grass: '#efeff1',
+  teal: '#e5178f',
+  green: '#e5178f',
+  yellow: '#ffffff',
+  red: '#111111',
+  blue: '#d8d8de',
+  violet: '#c5c5cc',
+  white: '#ffffff',
+  paper: '#f7f7f8'
 };
 
 const stage = document.querySelector('#stage');
@@ -90,7 +90,7 @@ const selectedRemember = document.querySelector('#selectedRemember');
 const sceneButtons = document.querySelectorAll('.view-button');
 
 const threeScene = new THREE.Scene();
-threeScene.fog = new THREE.FogExp2(0x05080d, 0.033);
+threeScene.fog = new THREE.FogExp2(0xf7f7f8, 0.025);
 
 const camera = new THREE.PerspectiveCamera(42, stage.clientWidth / stage.clientHeight, 0.1, 1000);
 camera.position.set(0, 8.5, 15);
@@ -546,13 +546,13 @@ function info(code, name, question, plain, controlsText, remember) {
 }
 
 function addLights() {
-  threeScene.add(new THREE.AmbientLight(0xc5dcff, 1.3));
+  threeScene.add(new THREE.AmbientLight(0xffffff, 1.65));
 
   const key = new THREE.DirectionalLight(0xffffff, 2.8);
   key.position.set(8, 13, 10);
   threeScene.add(key);
 
-  const rim = new THREE.PointLight(0x5fffe1, 11, 42);
+  const rim = new THREE.PointLight(0xe5178f, 5, 42);
   rim.position.set(-8, 5, -7);
   threeScene.add(rim);
 }
@@ -570,7 +570,7 @@ function addBackdrop() {
   threeScene.add(
     new THREE.Points(
       starGeometry,
-      new THREE.PointsMaterial({ color: 0x8db4ff, size: 0.028, transparent: true, opacity: 0.36 })
+      new THREE.PointsMaterial({ color: 0xe5178f, size: 0.025, transparent: true, opacity: 0.14 })
     )
   );
 }
@@ -581,9 +581,9 @@ function addGround() {
   grass.material.transparent = true;
   root.add(grass);
 
-  const grid = new THREE.GridHelper(20, 20, 0x23445c, 0x102434);
+  const grid = new THREE.GridHelper(20, 20, 0xe5178f, 0xd8d8de);
   grid.position.y = -0.02;
-  grid.material.opacity = 0.18;
+  grid.material.opacity = 0.16;
   grid.material.transparent = true;
   root.add(grid);
 }
@@ -596,8 +596,8 @@ function addRoad(length, width, z) {
     root.add(box(1.05, 0.04, 0.08, palette.lane, { x, y: 0.09, z }));
   }
 
-  root.add(box(length, 0.06, 0.08, '#d7edf3', { x: 0, y: 0.1, z: z - width / 2 + 0.25 }));
-  root.add(box(length, 0.06, 0.08, '#d7edf3', { x: 0, y: 0.1, z: z + width / 2 - 0.25 }));
+  root.add(box(length, 0.06, 0.08, '#ffffff', { x: 0, y: 0.1, z: z - width / 2 + 0.25 }));
+  root.add(box(length, 0.06, 0.08, '#ffffff', { x: 0, y: 0.1, z: z + width / 2 - 0.25 }));
   return road;
 }
 
@@ -615,7 +615,7 @@ function addGuardRail(z, colorValue, infoObject) {
 }
 
 function addRoadSign(label, x, z, colorValue, infoObject) {
-  const pole = cylinder(0.06, 1.5, '#d7edf3', { x, y: 0.75, z });
+  const pole = cylinder(0.06, 1.5, '#111111', { x, y: 0.75, z });
   const sign = box(1.45, 0.85, 0.12, colorValue, { x, y: 1.55, z });
   sign.userData.info = infoObject;
   pole.userData.info = infoObject;
@@ -638,7 +638,7 @@ function addCheckpoint(label, x, colorValue, infoObject, index) {
 function createCar(infoObject, colorValue) {
   const group = new THREE.Group();
   const body = box(1.45, 0.42, 0.82, colorValue, { y: 0.22 });
-  const roof = box(0.76, 0.36, 0.62, '#b8f5ff', { x: -0.1, y: 0.63 });
+  const roof = box(0.76, 0.36, 0.62, '#ffffff', { x: -0.1, y: 0.63 });
   const front = box(0.18, 0.24, 0.72, '#ffffff', { x: 0.82, y: 0.28 });
   [body, roof, front].forEach((mesh) => {
     mesh.userData.info = infoObject;
@@ -652,7 +652,7 @@ function createCar(infoObject, colorValue) {
     [-0.48, 0.48],
     [0.48, 0.48]
   ].forEach(([x, z]) => {
-    const wheel = cylinder(0.16, 0.16, '#111820', { x, y: 0.05, z });
+    const wheel = cylinder(0.16, 0.16, '#111111', { x, y: 0.05, z });
     wheel.rotation.x = Math.PI / 2;
     wheel.userData.info = infoObject;
     interactiveMeshes.push(wheel);

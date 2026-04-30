@@ -153,125 +153,262 @@
 
         <section class="detail-brief" aria-labelledby="detailBriefTitle">
           <div class="detail-brief__header">
-            <p class="eyebrow">Deeper guide</p>
-            <h2 id="detailBriefTitle">How to read the OS map when the car is real</h2>
+            <p class="eyebrow">Actual Satyam map</p>
+            <h2 id="detailBriefTitle">The real OS authorities people are confused by</h2>
             <p>
-              Use this when someone asks, “what does this OS document actually
-              decide?” The answer should always come back to the customer car,
-              the checkpoint that owns the next decision, and the rules that
-              stop bad shortcuts.
+              “Checkpoint” is only our car-story translation. Satyam’s real
+              structure is a set of Operating Systems: each one owns exactly one
+              kind of truth, and the customer journey moves by passing signals
+              between them.
             </p>
           </div>
 
-          <div class="detail-flow" aria-label="Detailed OS reading guide">
-            <article class="detail-row">
-              <div>
-                <span>Step 1</span>
-                <h3>Start with one customer request</h3>
-              </div>
+          <div class="authority-map" aria-label="Actual Satyam OS authorities">
+            <article class="authority-card authority-card--featured">
+              <span>Before OS</span>
+              <h3>Genie / Commitment Decision Spec</h3>
               <p>
-                Do not begin with tables, services, or diagrams. Begin with one
-                customer request: phone number, location, selected plan, source,
-                current status, and what the customer is trying to get done.
+                Owns the question: <strong>should Wiom promise service here?</strong>
+                It returns COMMIT, DEFER, or REJECT using declared inputs only.
               </p>
               <p>
-                The OS map is useful only if it can say where this request is
-                now and what should happen next.
+                Important: Satyam did not accept this as a full OS. He accepted
+                it as a bounded decision spec that feeds the real OS map.
+              </p>
+            </article>
+
+            <article class="authority-card">
+              <span>CL OS</span>
+              <h3>Connection Lifecycle</h3>
+              <p>
+                Owns the connection object: what state it is in, what events can
+                move it, and which lifecycle signal goes downstream.
+              </p>
+              <p>
+                It does not decide who serves. It emits the connection event;
+                D&amp;A consumes it.
+              </p>
+            </article>
+
+            <article class="authority-card">
+              <span>D&amp;A OS</span>
+              <h3>Demand &amp; Allocation</h3>
+              <p>
+                Owns the “who serves?” decision. It chooses the CSP for a new
+                assignment, retry, reassignment, slot change, or structural reroute.
+              </p>
+              <p>
+                It does not define connection state, zones, payouts, quality, or
+                payments. It consumes those truths from other OSes.
+              </p>
+            </article>
+
+            <article class="authority-card">
+              <span>CC OS</span>
+              <h3>Capacity &amp; Coverage</h3>
+              <p>
+                Owns supply topology: zones, boundaries, CSP-zone eligibility,
+                capacity caps, effective coverage, and redundancy pressure.
+              </p>
+              <p>
+                D&amp;A needs this before routing, because allocation is only as good
+                as the supply map it reads.
+              </p>
+            </article>
+
+            <article class="authority-card">
+              <span>Quality OS</span>
+              <h3>Quality</h3>
+              <p>
+                Owns execution truth: whether service stability, service
+                resolution, installation quality, and complaint experience are
+                healthy or degraded.
+              </p>
+              <p>
+                It does not punish or allocate. It produces truth that
+                Enforcement, D&amp;A, and Compensation act on.
+              </p>
+            </article>
+
+            <article class="authority-card">
+              <span>ENF OS</span>
+              <h3>Enforcement</h3>
+              <p>
+                Owns CSP eligibility posture. It turns sustained Quality truth
+                or integrity events into CLEAR, WATCH, RESTRICTED, PRE_EXIT, or
+                suspension-style consequences.
+              </p>
+              <p>
+                It does not compute quality, money, or routing. It emits posture
+                signals that others consume.
+              </p>
+            </article>
+
+            <article class="authority-card">
+              <span>Exit OS</span>
+              <h3>Exit</h3>
+              <p>
+                Owns the controlled closure of a CSP relationship. It manages the
+                exit state machine and tells downstream OSes what must happen next.
+              </p>
+              <p>
+                It does not do routing math or payments. It triggers D&amp;A,
+                Payments, Custody, Capacity, and CL to perform their owned work.
+              </p>
+            </article>
+
+            <article class="authority-card">
+              <span>ACS</span>
+              <h3>Asset Custody</h3>
+              <p>
+                Owns Wiom-owned device custody truth: which CSP holds which
+                NetBox, whether it is deployed, idle, returned, damaged, lost,
+                or written off.
+              </p>
+              <p>
+                It observes and emits custody facts. It does not punish, pay, or route.
+              </p>
+            </article>
+
+            <article class="authority-card">
+              <span>COMP OS</span>
+              <h3>Compensation</h3>
+              <p>
+                Owns economic entitlement: what a CSP has earned from valid
+                recharge events, quality eligibility, and enforcement posture.
+              </p>
+              <p>
+                It calculates money. It does not move money. Payment OS does that.
+              </p>
+            </article>
+
+            <article class="authority-card">
+              <span>PAY OS</span>
+              <h3>Payment &amp; Settlement</h3>
+              <p>
+                Owns wallet mutation, settlement, withdrawal, ledger
+                reconciliation, freezes, holds, and liability adjustment.
+              </p>
+              <p>
+                Its rule is simple: it moves money, but it does not decide money.
+              </p>
+            </article>
+
+            <article class="authority-card">
+              <span>SR OS</span>
+              <h3>Support &amp; Resolution</h3>
+              <p>
+                Owns service complaint intake, classification, task routing,
+                timer governance, closure, and the resolution signal sent to Quality.
+              </p>
+              <p>
+                It turns messy customer problems into clean service-truth signals.
+              </p>
+            </article>
+
+            <article class="authority-card">
+              <span>CAEO</span>
+              <h3>Customer Access Entitlement</h3>
+              <p>
+                Owns the customer-facing answer: can this active connection use
+                internet right now?
+              </p>
+              <p>
+                It resolves customer recharge entitlement plus CL supply state
+                into ENABLED or BLOCKED access truth.
+              </p>
+            </article>
+          </div>
+
+          <div class="handoff-strip" aria-label="Customer journey through actual OSes">
+            <h3>For a dummy, read the handoff like this</h3>
+            <p>
+              Genie says whether Wiom should promise. CL creates and tracks the
+              connection. D&amp;A chooses who serves. Capacity &amp; Coverage tells D&amp;A
+              what supply is real. Quality measures execution. Enforcement
+              changes CSP posture. Exit closes bad or voluntary departures.
+              Compensation calculates money. Payment moves money. Support
+              converts complaints into quality truth. CAEO tells the customer
+              whether internet should work right now.
+            </p>
+          </div>
+
+          <div class="detail-flow" aria-label="How the major OSes hand off">
+            <article class="detail-row">
+              <div>
+                <span>Handoff 1</span>
+                <h3>Promise to connection</h3>
+              </div>
+              <p>
+                Genie/Commitment decides whether Wiom can safely say yes. If the
+                answer is COMMIT, the journey can create a connection request.
+              </p>
+              <p>
+                CL OS then owns the connection lifecycle. From that point, the
+                customer car is no longer just a lead; it is a governed connection object.
               </p>
             </article>
 
             <article class="detail-row">
               <div>
-                <span>Step 2</span>
-                <h3>Find the checkpoint that owns the next decision</h3>
+                <span>Handoff 2</span>
+                <h3>Connection to allocation</h3>
               </div>
               <p>
-                A checkpoint is an owner. Coverage should decide whether the
-                location can be served. Allocation should decide who serves it.
-                Lifecycle should decide the official journey state.
+                CL emits the structural event. D&amp;A consumes it and decides the
+                serving CSP using the routing engine.
               </p>
               <p>
-                If two teams can make the same decision, the map is weak. If no
-                team clearly owns the decision, the car gets stuck.
+                D&amp;A reads Capacity &amp; Coverage for zone/eligibility/capacity truth
+                and reads Quality/Enforcement signals for CSP posture.
               </p>
             </article>
 
             <article class="detail-row">
               <div>
-                <span>Step 3</span>
-                <h3>Read the primitives as non-negotiable laws</h3>
+                <span>Handoff 3</span>
+                <h3>Execution to consequences</h3>
               </div>
               <p>
-                Primitives are the truths the system must protect even when a
-                shortcut looks faster. Example: one customer request should have
-                one official state, one official owner for a decision, and one
-                controlled path forward.
+                After service starts, Quality decides whether execution is good
+                or degraded. Support feeds it complaint-resolution truth.
               </p>
               <p>
-                If a primitive is violated, the journey may still move, but the
-                business loses trust in the data and the ownership model.
+                Enforcement consumes sustained Quality truth and integrity events
+                to decide whether a CSP remains clear, restricted, suspended, or
+                pushed toward exit.
               </p>
             </article>
 
             <article class="detail-row">
               <div>
-                <span>Step 4</span>
-                <h3>Check the guards that block illegal moves</h3>
+                <span>Handoff 4</span>
+                <h3>Money and access</h3>
               </div>
               <p>
-                A guard is the enforcement mechanism. It can be a validation,
-                state check, duplicate check, permissions rule, or hard block in
-                the workflow.
+                Compensation computes what the CSP has earned. Payment executes
+                settlement and wallet movement from those entitlement records.
               </p>
               <p>
-                The simple test: if someone tries to skip the owner checkpoint,
-                double-assign the customer, or jump to an invalid state, what
-                stops them?
-              </p>
-            </article>
-
-            <article class="detail-row">
-              <div>
-                <span>Step 5</span>
-                <h3>Separate tuneable parameters from hard rules</h3>
-              </div>
-              <p>
-                Parameters are knobs, not new logic. Radius, wait time, retry
-                count, partner cap, and thresholds should be visible settings
-                that can be changed deliberately.
-              </p>
-              <p>
-                This keeps the system flexible without letting people hide
-                business decisions inside random code paths.
-              </p>
-            </article>
-
-            <article class="detail-row">
-              <div>
-                <span>Step 6</span>
-                <h3>Use the state machine to prevent confusion</h3>
-              </div>
-              <p>
-                State says where the car is right now. Transitions say where it
-                is allowed to go next. This matters because teams often disagree
-                when the same customer appears to be in two places at once.
-              </p>
-              <p>
-                A good OS map makes the next allowed move obvious and makes bad
-                jumps impossible or clearly exceptional.
+                CAEO resolves the customer-facing access truth, so the app or
+                captive portal does not guess from payment or supply fragments.
               </p>
             </article>
           </div>
 
           <div class="question-strip" aria-label="Questions the OS map should answer">
-            <h3>The map should answer these questions</h3>
+            <h3>If someone is confused, ask which OS owns the truth</h3>
             <ul>
-              <li>Where is the customer request right now?</li>
-              <li>Which checkpoint owns the next decision?</li>
-              <li>What truth must not be broken?</li>
-              <li>What guard blocks a bad shortcut?</li>
-              <li>Which parameter can be tuned without changing the rule?</li>
-              <li>What is the next allowed state?</li>
+              <li>Should Wiom promise? Commitment Decision Spec.</li>
+              <li>What state is the connection in? CL OS.</li>
+              <li>Who should serve it? D&amp;A OS.</li>
+              <li>Where can we serve and at what capacity? Capacity &amp; Coverage OS.</li>
+              <li>Is the CSP executing well? Quality OS.</li>
+              <li>Should posture change? Enforcement OS.</li>
+              <li>Is the CSP exiting? Exit OS.</li>
+              <li>What has the CSP earned? Compensation OS.</li>
+              <li>Who moves the money? Payment OS.</li>
+              <li>What should the customer app show? CAEO.</li>
             </ul>
           </div>
         </section>
