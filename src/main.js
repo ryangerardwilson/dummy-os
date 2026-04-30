@@ -28,16 +28,8 @@ const scenes = {
     camera: [0, 10, 17],
     target: [0, 0, 0]
   },
-  termPrimitives: {
-    number: 'T1',
-    title: 'Primitives and guards',
-    summary: 'Primitive = the law: stay on the Wiom road. Guard = the gate that blocks a private shortcut.',
-    lesson: 'A primitive describes what must always be true. A guard is the code/check/barrier that refuses a move when the car tries to break that truth.',
-    camera: [0, 9, 16],
-    target: [0, 0, 0]
-  },
   termParameters: {
-    number: 'T2',
+    number: '04',
     title: 'Parameters',
     summary: 'A parameter is the number on the sign. Same road, same rule, different value.',
     lesson: 'The rule is “obey the speed limit.” The parameter is the number on the sign. Change 30 to 60, and the car can move faster without rebuilding the road.',
@@ -45,19 +37,11 @@ const scenes = {
     target: [0, 0, 0]
   },
   termState: {
-    number: 'T3',
+    number: '05',
     title: 'State machine',
     summary: 'A state machine is like a car wash: Queue → Soap → Rinse → Dry → Done.',
     lesson: 'State = which bay the car is currently in. Transition = the conveyor moving it to the next allowed bay.',
     camera: [0, 9.5, 17],
-    target: [0, 0, 0]
-  },
-  termSubsystem: {
-    number: 'T4',
-    title: 'Roadwork tiers',
-    summary: 'Think of tiers as roadwork permits. Tier 1 repaints a sign. Tier 2 adds a local detour. Tier 3 rebuilds the junction and needs rollback controls.',
-    lesson: 'The bigger the blast radius, the stricter the permit. Tier 3 is not a different kind of subsystem; it is the control level for risky system change.',
-    camera: [0, 11.5, 19],
     target: [0, 0, 0]
   }
 };
@@ -148,10 +132,8 @@ function setScene(sceneId) {
   if (sceneId === 'car') buildCarScene();
   if (sceneId === 'rules') buildRulesScene();
   if (sceneId === 'checkpoints') buildCheckpointScene();
-  if (sceneId === 'termPrimitives') buildPrimitiveGuardTermScene();
   if (sceneId === 'termParameters') buildParameterTermScene();
   if (sceneId === 'termState') buildStateTermScene();
-  if (sceneId === 'termSubsystem') buildSubsystemTermScene();
 
   camera.position.set(...config.camera);
   controls.target.set(...config.target);
@@ -308,70 +290,6 @@ function buildCheckpointScene() {
   selectInfo(allocationInfo);
 }
 
-function buildPrimitiveGuardTermScene() {
-  const primitiveInfo = info(
-    'LAW',
-    'Primitive',
-    'What is a primitive?',
-    'A primitive is the road law that must always remain true.',
-    'Example: the customer must stay on the Wiom-owned road; no partner gets a private customer road.',
-    'The primitive tells everyone what the system must protect.'
-  );
-  const guardInfo = info(
-    'GUARD',
-    'Guard',
-    'What is a guard?',
-    'A guard is the gate that blocks a car when it tries to break the road law.',
-    'Example: reject private assignment, double assignment, invalid state jump, or forbidden shortcut.',
-    'Primitive says the rule. Guard refuses the illegal move.'
-  );
-  const violationInfo = info(
-    'BAD',
-    'Private shortcut attempt',
-    'What is being blocked?',
-    'The red car is trying to leave the Wiom road and enter a private shortcut.',
-    'That is the kind of move a guard should reject.',
-    'If the guard does not block this, the primitive is just a poster on the wall.'
-  );
-
-  addGround();
-  addRoad(15, 4.3, 0);
-  addRoadSign('LAW: stay on Wiom road', -5.6, -3.15, palette.green, primitiveInfo);
-
-  const privateRoad = box(7.6, 0.12, 1.05, palette.red, { x: 1.7, y: 0.08, z: 3.05, rotY: -0.42 });
-  privateRoad.userData.info = violationInfo;
-  interactiveMeshes.push(privateRoad);
-  root.add(privateRoad);
-
-  const gate = box(0.34, 1.25, 3.1, palette.red, { x: -0.85, y: 0.68, z: 2.05, rotY: -0.42 });
-  gate.userData.info = guardInfo;
-  interactiveMeshes.push(gate);
-  root.add(gate);
-
-  addRoadSign('GUARD blocks shortcut', -1.05, 3.6, palette.red, guardInfo);
-  addRoadSign('PRIVATE ROAD', 3.8, 4.3, palette.red, violationInfo);
-
-  const goodCar = createCar(info('CAR', 'Valid customer car', 'What is happening?', 'This car stays on the official Wiom road.', 'It follows the primitive, so the guard does not need to stop it.', 'The happy path is boring because the law is being followed.'), palette.teal);
-  goodCar.position.set(-6.2, 0.45, 0);
-  root.add(goodCar);
-
-  const badCar = createCar(violationInfo, palette.red);
-  badCar.position.set(-3.1, 0.45, 1.5);
-  badCar.rotation.y = -0.42;
-  root.add(badCar);
-
-  animated.push((elapsed) => {
-    const goodPhase = loopProgress(elapsed, 0.13);
-    goodCar.position.x = THREE.MathUtils.lerp(-6.2, 5.4, goodPhase);
-
-    const badPhase = Math.min(loopProgress(elapsed, 0.2) * 1.35, 1);
-    badCar.position.x = THREE.MathUtils.lerp(-3.1, -1.05, badPhase);
-    badCar.position.z = THREE.MathUtils.lerp(1.5, 2.45, badPhase);
-  });
-
-  selectInfo(primitiveInfo);
-}
-
 function buildParameterTermScene() {
   const parameterInfo = info(
     'PARAM',
@@ -482,141 +400,6 @@ function buildStateTermScene() {
   });
 
   selectInfo(stateInfo);
-}
-
-function buildSubsystemTermScene() {
-  const subsystemInfo = info(
-    'SUB',
-    'Subsystem worksite',
-    'What is a subsystem?',
-    'A subsystem is a specialist worksite attached to the Wiom road.',
-    'It performs one bounded job, like checking whether Wiom should promise service.',
-    'It can help the road, but it does not own every checkpoint or the whole journey.'
-  );
-  const tier1Info = info(
-    'T1',
-    'Tier 1: repaint the sign',
-    'What is Tier 1?',
-    'Tier 1 is a small polish job. The car drives the same road in the same way.',
-    'Example: copy change, spacing fix, known bug fix, or refactor with identical behavior.',
-    'If the route, rules, money, states, and trust do not change, this is Tier 1.'
-  );
-  const tier2Info = info(
-    'T2',
-    'Tier 2: local detour',
-    'What is Tier 2?',
-    'Tier 2 changes one local stretch of road, but the wider road system stays the same.',
-    'Example: new validation, new screen in an existing flow, notification, or backend call inside an existing contract.',
-    'The car may bend around a cone, but it does not enter a new highway system.'
-  );
-  const tier3Info = info(
-    'T3',
-    'Tier 3: rebuild the junction',
-    'What is Tier 3?',
-    'Tier 3 changes the junction: rules, states, money, routing, trust, or failure modes.',
-    'Example: promise decision logic, state machine, entitlement, assignment, payout, irreversible action, or policy change.',
-    'This needs a full permit, rollback road, observability, and kill switch because many cars can be affected.'
-  );
-
-  addGround();
-  addRoad(17.5, 1.55, -3.35);
-  addRoad(17.5, 1.55, 0);
-  addRoad(17.5, 1.55, 3.35);
-
-  const worksite = box(2.2, 0.22, 1.28, palette.paper, { x: -7.0, y: 0.18, z: 0 });
-  worksite.userData.info = subsystemInfo;
-  interactiveMeshes.push(worksite);
-  root.add(worksite);
-  addLabel('subsystem worksite', -7.0, 0.58, 0, 'label label--station');
-
-  addRoadSign('T1: repaint sign', -4.85, -4.75, palette.green, tier1Info);
-  addRoadSign('COPY FIX', 0.2, -4.75, palette.paper, tier1Info);
-  const paintTray = box(1.0, 0.08, 0.52, palette.teal, { x: 1.55, y: 0.16, z: -4.1 });
-  const paintRoller = box(0.95, 0.08, 0.12, palette.teal, { x: 2.45, y: 0.28, z: -4.1, rotZ: 0.24 });
-  [paintTray, paintRoller].forEach((part) => {
-    part.userData.info = tier1Info;
-    interactiveMeshes.push(part);
-    root.add(part);
-  });
-
-  addRoadSign('T2: local detour', -4.85, -1.4, palette.violet, tier2Info);
-  const detourPatch = box(2.0, 0.16, 1.1, palette.red, { x: -0.3, y: 0.14, z: 0 });
-  detourPatch.userData.info = tier2Info;
-  interactiveMeshes.push(detourPatch);
-  root.add(detourPatch);
-  addLabel('one blocked patch', -0.3, 0.72, 0, 'label label--station');
-  [-1.35, -0.65, 0.05, 0.75].forEach((x) => {
-    const cone = cylinder(0.12, 0.42, palette.teal, { x, y: 0.34, z: -0.9 });
-    cone.userData.info = tier2Info;
-    interactiveMeshes.push(cone);
-    root.add(cone);
-  });
-
-  addRoadSign('T3: rebuild junction', -4.85, 1.95, palette.teal, tier3Info);
-  const junction = box(3.35, 0.16, 2.55, palette.paper, { x: -0.2, y: 0.14, z: 3.35 });
-  const gate = box(0.16, 1.2, 2.2, palette.red, { x: -1.8, y: 0.7, z: 3.35 });
-  const controlTower = box(1.0, 1.65, 1.0, palette.teal, { x: 1.95, y: 0.9, z: 4.75 });
-  [junction, gate, controlTower].forEach((part) => {
-    part.userData.info = tier3Info;
-    interactiveMeshes.push(part);
-    root.add(part);
-  });
-  addLabel('new rules + states', -0.2, 0.72, 3.35, 'label label--station');
-  addLabel('control room', 1.95, 1.88, 4.75, 'label label--station');
-
-  const rollbackRoad = box(5.0, 0.1, 0.82, palette.asphalt, { x: 2.75, y: 0.07, z: 5.75, rotY: -0.28 });
-  rollbackRoad.userData.info = tier3Info;
-  interactiveMeshes.push(rollbackRoad);
-  root.add(rollbackRoad);
-  addLabel('rollback road', 3.35, 0.45, 5.7, 'label label--station');
-
-  const killSwitch = box(0.82, 0.3, 0.82, palette.red, { x: 3.35, y: 1.95, z: 4.75 });
-  killSwitch.userData.info = tier3Info;
-  interactiveMeshes.push(killSwitch);
-  root.add(killSwitch);
-  addLabel('kill switch', 3.35, 2.36, 4.75, 'label label--station');
-
-  const tier1Car = createCar(info('CAR', 'Tier 1 car', 'What is happening?', 'The car drives straight through because only the sign was repainted.', 'No new behavior. No new state. No new contract.', 'Tier 1 is safe polish.'), palette.teal);
-  tier1Car.position.set(-7.4, 0.45, -3.35);
-  root.add(tier1Car);
-
-  const tier2Car = createCar(info('CAR', 'Tier 2 car', 'What is happening?', 'The car bends around one local work patch, then returns to the same road.', 'Behavior changed locally, but the whole road system did not change.', 'Tier 2 is a local detour, not a junction rebuild.'), palette.blue);
-  tier2Car.position.set(-7.4, 0.45, 0);
-  root.add(tier2Car);
-
-  const tier3Car = createCar(info('CAR', 'Tier 3 car', 'What is happening?', 'The car reaches a rebuilt junction where the system rules can change.', 'This needs a permit, rollback road, monitoring, and a kill switch.', 'Commitment Decision Spec lands here because promise mistakes can affect many downstream cars.'), palette.teal);
-  tier3Car.position.set(-7.4, 0.45, 3.35);
-  root.add(tier3Car);
-
-  const waitingCar = createCar(tier3Info, palette.blue);
-  waitingCar.position.set(-2.8, 0.45, 3.85);
-  waitingCar.scale.setScalar(0.86);
-  root.add(waitingCar);
-
-  animated.push((elapsed) => {
-    const phase = loopProgress(elapsed, 0.1);
-    tier1Car.position.x = THREE.MathUtils.lerp(-7.4, 7.2, phase);
-    tier1Car.position.y = 0.45 + Math.sin(elapsed * 5) * 0.02;
-
-    const tier2Phase = loopProgress(elapsed + 1.3, 0.1);
-    tier2Car.position.x = THREE.MathUtils.lerp(-7.4, 7.2, tier2Phase);
-    if (tier2Car.position.x > -2.6 && tier2Car.position.x < 2.6) {
-      const detourProgress = (tier2Car.position.x + 2.6) / 5.2;
-      tier2Car.position.z = Math.sin(detourProgress * Math.PI) * 1.05;
-    } else {
-      tier2Car.position.z = 0;
-    }
-    tier2Car.position.y = 0.45 + Math.sin(elapsed * 5) * 0.02;
-
-    const tier3Phase = loopProgress(elapsed + 2.4, 0.075);
-    tier3Car.position.x = THREE.MathUtils.lerp(-7.4, 6.9, tier3Phase);
-    tier3Car.position.z = tier3Phase > 0.63 ? THREE.MathUtils.lerp(3.35, 5.1, Math.min((tier3Phase - 0.63) / 0.24, 1)) : 3.35;
-    tier3Car.position.y = 0.45 + Math.sin(elapsed * 5) * 0.02;
-    gate.rotation.z = Math.sin(elapsed * 1.4) * 0.18;
-    controlTower.rotation.y = Math.sin(elapsed * 0.7) * 0.08;
-  });
-
-  selectInfo(tier3Info);
 }
 
 function initMacroScene(container) {

@@ -8,7 +8,7 @@ The central metaphor:
 - Customer request = car.
 - Business journey = road.
 - OS document = driving manual for one part of the road.
-- Primitives = traffic laws.
+- Road laws = truths that must always hold.
 - Guards = no-entry signs and guardrails.
 - Parameters = speed limits and tunable road rules.
 - OS ownership = checkpoints with one job.
@@ -35,12 +35,10 @@ The main micro journey explains the single-customer flow:
 - Road rules: shows laws, boundaries, and guards as traffic laws, owner lanes, and blocked shortcuts.
 - Checkpoints: shows each OS as a checkpoint that owns one decision.
 
-The deep-dive scenes explain confusing terms:
+The remaining deep-dive scenes explain confusing terms:
 
-- Primitives + guards: the Wiom road law plus the gate that blocks a private shortcut.
 - Parameters: the number on a sign, such as speed limit 30 vs 60, where the rule stays the same but behavior changes.
 - State machine: a car wash conveyor where the car moves Queue → Soap → Rinse → Dry → Done.
-- Roadwork tiers: Tier 1 repaints a sign, Tier 2 adds a local detour, and Tier 3 rebuilds the junction with rollback controls.
 
 The text sections then stitch the metaphor back to Satyam's actual OS map:
 
