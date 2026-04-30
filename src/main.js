@@ -59,30 +59,6 @@ const scenes = {
     lesson: 'State = which bay the car is currently in. Transition = the conveyor moving it to the next allowed bay.',
     camera: [0, 9.5, 17],
     target: [0, 0, 0]
-  },
-  termEvents: {
-    number: 'T4',
-    title: 'Events and logs',
-    summary: 'Event = notification sent forward. Log = saved proof kept behind.',
-    lesson: 'When the car passes a checkpoint camera, the next checkpoint gets a notification. The camera also saves proof. Notification is the event; saved proof is the log.',
-    camera: [0, 9, 16],
-    target: [0, 0, 0]
-  },
-  termAuthority: {
-    number: 'T5',
-    title: 'Authority boundary',
-    summary: 'Authority means one checkpoint owns the decision. Boundary means others cannot sneak around it.',
-    lesson: 'If everyone can decide, nobody owns truth. Authority boundaries keep one official source for each decision.',
-    camera: [0, 9.5, 16],
-    target: [0, 0, 0]
-  },
-  termBuildSpec: {
-    number: 'T6',
-    title: 'Build spec',
-    summary: 'A build spec turns the driving manual into construction instructions for engineers.',
-    lesson: 'OS doc says what must be true. Build spec says how to build the road, signs, checkpoints, storage, and tests.',
-    camera: [0, 8.7, 15],
-    target: [0, 0, 0]
   }
 };
 
@@ -182,9 +158,6 @@ function setScene(sceneId) {
   if (sceneId === 'termPrimitives') buildPrimitiveGuardTermScene();
   if (sceneId === 'termParameters') buildParameterTermScene();
   if (sceneId === 'termState') buildStateTermScene();
-  if (sceneId === 'termEvents') buildEventsTermScene();
-  if (sceneId === 'termAuthority') buildAuthorityTermScene();
-  if (sceneId === 'termBuildSpec') buildBuildSpecTermScene();
 
   camera.position.set(...config.camera);
   controls.target.set(...config.target);
@@ -549,185 +522,6 @@ function buildStateTermScene() {
   selectInfo(stateInfo);
 }
 
-function buildEventsTermScene() {
-  const eventInfo = info(
-    'EVENT',
-    'Event',
-    'What is an event?',
-    'An event is a notification sent when something happens.',
-    'Example: the Coverage camera sees the car and tells Allocation.',
-    'The event moves news forward so the next checkpoint can act.'
-  );
-  const logInfo = info(
-    'LOG',
-    'Event log',
-    'What is a log?',
-    'A log is the saved proof that the thing happened.',
-    'Example: the camera saves a photo/time record when the car passes.',
-    'The log stays behind for debugging; it is not the notification sent forward.'
-  );
-  const cameraInfo = info(
-    'CAM',
-    'Checkpoint camera',
-    'What triggers the event?',
-    'The camera notices the car passing Coverage.',
-    'It does two things: sends a notification ahead and saves proof behind.',
-    'Something happened -> event sent -> log saved.'
-  );
-
-  addGround();
-  addRoad(16, 3.6, 0);
-  addCheckpoint('Coverage camera', -4.8, palette.green, cameraInfo, 0);
-  addCheckpoint('Allocation receives', 4.8, palette.green, eventInfo, 1);
-
-  const cameraPole = cylinder(0.07, 1.6, '#d7edf3', { x: -4.8, y: 0.8, z: 2.35 });
-  const cameraBody = box(0.95, 0.48, 0.62, palette.blue, { x: -4.8, y: 1.55, z: 2.0 });
-  const cameraLens = cylinder(0.18, 0.18, palette.white, { x: -4.8, y: 1.55, z: 1.62, rotX: Math.PI / 2 });
-  [cameraPole, cameraBody, cameraLens].forEach((part) => {
-    part.userData.info = cameraInfo;
-    interactiveMeshes.push(part);
-    root.add(part);
-  });
-  addLabel('camera sees car', -4.8, 2.05, 2.0, 'label label--station');
-
-  const notification = box(1.95, 0.42, 0.92, palette.yellow, { x: -4.8, y: 1.05, z: 0 });
-  notification.userData.info = eventInfo;
-  interactiveMeshes.push(notification);
-  root.add(notification);
-  const notificationLabel = makeLabel('notification', 'label label--paper');
-  notificationLabel.position.set(0, 0.68, 0);
-  notification.add(notificationLabel);
-
-  const savedPhoto = box(2.15, 0.3, 1.25, palette.violet, { x: -4.8, y: 0.28, z: 3.55, rotY: 0.08 });
-  const photoFlash = box(1.45, 0.04, 0.72, palette.white, { x: -4.8, y: 0.47, z: 3.55, rotY: 0.08, opacity: 0.76 });
-  [savedPhoto, photoFlash].forEach((part) => {
-    part.userData.info = logInfo;
-    interactiveMeshes.push(part);
-    root.add(part);
-  });
-  addLabel('saved proof', -4.8, 0.9, 3.55, 'label label--station');
-
-  const car = createCar(info('CAR', 'Customer car', 'What is happening?', 'The car passes the Coverage camera.', 'The camera sends a notification forward and saves proof behind.', 'Event and log are two different outputs from the same moment.'), palette.teal);
-  car.position.set(-7.2, 0.45, 0);
-  root.add(car);
-
-  animated.push((elapsed) => {
-    const phase = loopProgress(elapsed, 0.1);
-    const triggerStart = 0.17;
-    const triggerEnd = 0.82;
-    const eventPhase = THREE.MathUtils.clamp((phase - triggerStart) / (triggerEnd - triggerStart), 0, 1);
-    const isTriggered = phase >= triggerStart && phase <= triggerEnd;
-
-    car.position.x = THREE.MathUtils.lerp(-7.2, 7.2, phase);
-    notification.visible = isTriggered;
-    notification.position.x = THREE.MathUtils.lerp(-4.8, 4.8, eventPhase);
-    notification.position.y = 1.05 + Math.sin(elapsed * 7) * 0.025;
-
-    const proofPulse = phase >= triggerStart && phase < 0.32 ? 1.14 : 1;
-    savedPhoto.scale.setScalar(proofPulse);
-    photoFlash.scale.setScalar(proofPulse);
-    photoFlash.material.opacity = phase >= triggerStart && phase < 0.32 ? 0.9 : 0.45;
-  });
-
-  selectInfo(cameraInfo);
-}
-
-function buildAuthorityTermScene() {
-  const authorityInfo = info(
-    'OWNER',
-    'Authority',
-    'What is authority?',
-    'Authority means one checkpoint is the official owner of a decision.',
-    'Example: Allocation owns who serves the customer.',
-    'The owner checkpoint produces the truth others should consume.'
-  );
-  const boundaryInfo = info(
-    'BOUND',
-    'Boundary',
-    'What is a boundary?',
-    'A boundary says other checkpoints cannot make this decision by shortcut.',
-    'Example: Support cannot directly assign a partner.',
-    'Boundaries keep the road honest.'
-  );
-
-  addGround();
-  addRoad(16, 4.3, 0);
-  addCheckpoint('Authority: Allocation', 0, palette.green, authorityInfo, 0);
-  addRoadSign('OWNER', 0, -3.3, palette.green, authorityInfo);
-
-  const sideRoad = box(7.2, 0.12, 1.25, palette.red, { x: 1.6, y: 0.08, z: 3.05, rotY: -0.45 });
-  const barrier = box(0.28, 1.1, 3.4, palette.red, { x: -0.6, y: 0.62, z: 2.0, rotY: -0.45 });
-  [sideRoad, barrier].forEach((mesh) => {
-    mesh.userData.info = boundaryInfo;
-    interactiveMeshes.push(mesh);
-    root.add(mesh);
-  });
-  addRoadSign('BOUNDARY', -0.8, 3.7, palette.red, boundaryInfo);
-
-  const car = createCar(info('CAR', 'Car routed to owner', 'What is happening?', 'The car is forced through the checkpoint that owns the decision.', 'The bad shortcut exists visually, but the barrier blocks it.', 'Authority is useful only if the boundary is enforced.'), palette.teal);
-  car.position.set(-5.6, 0.45, 0);
-  root.add(car);
-  animated.push((elapsed) => {
-    car.position.x = THREE.MathUtils.lerp(-5.6, 2.9, loopProgress(elapsed, 0.15));
-  });
-
-  selectInfo(authorityInfo);
-}
-
-function buildBuildSpecTermScene() {
-  const osInfo = info(
-    'OS',
-    'OS doc',
-    'What does the OS doc say?',
-    'It says what must be true on the road.',
-    'Ownership, rules, states, events, parameters, and forbidden moves.',
-    'This is the policy manual.'
-  );
-  const specInfo = info(
-    'SPEC',
-    'Build spec',
-    'What is a build spec?',
-    'It turns the manual into construction instructions.',
-    'Tables, endpoints, event handlers, state transitions, and tests.',
-    'This is the bridge from policy to code.'
-  );
-  const codeInfo = info(
-    'CODE',
-    'Running service',
-    'What does engineering build?',
-    'The actual road, signs, barriers, and checkpoints the car uses.',
-    'A service that follows the build spec and proves it with tests.',
-    'Code should implement the manual, not invent its own road.'
-  );
-
-  addGround();
-  const blocks = [
-    ['OS doc', -5.4, palette.paper, osInfo],
-    ['Build spec', 0, palette.yellow, specInfo],
-    ['Code service', 5.4, palette.blue, codeInfo]
-  ];
-
-  blocks.forEach(([label, x, color, infoObject]) => {
-    const block = box(3.2, 0.55, 2.15, color, { x, y: 0.32, z: 0 });
-    block.userData.info = infoObject;
-    interactiveMeshes.push(block);
-    root.add(block);
-    addLabel(label, x, 0.92, 0, 'label label--station');
-  });
-
-  root.add(line(new THREE.Vector3(-3.55, 0.45, 0), new THREE.Vector3(-1.85, 0.45, 0), palette.teal, 0.65));
-  root.add(line(new THREE.Vector3(1.85, 0.45, 0), new THREE.Vector3(3.55, 0.45, 0), palette.teal, 0.65));
-
-  const car = createCar(info('CAR', 'Idea becomes road', 'What is moving?', 'The idea moves from policy to spec to code.', 'Each step makes the instruction more buildable.', 'A build spec is not extra paperwork; it is translation.'), palette.teal);
-  car.position.set(-6.8, 0.9, 2.7);
-  root.add(car);
-  animated.push((elapsed) => {
-    car.position.x = THREE.MathUtils.lerp(-6.8, 6.8, loopProgress(elapsed, 0.12));
-  });
-
-  selectInfo(specInfo);
-}
-
 function checkpointInfo(code, name, question, plain) {
   return info(
     code,
@@ -913,17 +707,12 @@ function loopProgress(elapsed, speed) {
 }
 
 function addLabel(text, x, y, z, className) {
-  const labelObject = makeLabel(text, className);
-  labelObject.position.set(x, y, z);
-  root.add(labelObject);
-  return labelObject;
-}
-
-function makeLabel(text, className) {
   const label = document.createElement('div');
   label.className = className;
   label.textContent = text;
   const labelObject = new CSS2DObject(label);
+  labelObject.position.set(x, y, z);
+  root.add(labelObject);
   return labelObject;
 }
 
