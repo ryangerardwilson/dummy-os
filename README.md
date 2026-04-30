@@ -26,7 +26,7 @@ The main journey explains the whole OS structure:
 The deep-dive scenes explain confusing terms:
 
 - Primitives + guards: the Wiom road law plus the gate that blocks a private shortcut.
-- Parameters: tunable road settings like radius, wait time, and retry count.
+- Parameters: knobs such as radius values where the rule stays the same but the allowed behavior changes.
 - State machine: allowed stops and legal next moves.
 - Events + logs: handoff slips and trip records.
 - Authority boundary: one owner checkpoint, no shortcut ownership theft.
