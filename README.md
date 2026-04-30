@@ -49,7 +49,7 @@ OS authorities:
 - D&A OS: who should serve the connection?
 - Capacity & Coverage OS: where can Wiom serve, who is eligible, and how much capacity exists?
 - Asset Custody Lifecycle OS: the OS authority for device custody truth.
-- Quality, Enforcement, Exit, Compensation, Payment, Support, and CAEO: the adjacent authorities that own execution truth, posture, closure, money, complaint truth, and customer access truth.
+- Quality, Enforcement, Exit, Compensation, Payment, Support, and CAEO OS: the adjacent authorities that own execution truth, posture, closure, money, complaint truth, and customer access truth.
 
 Non-OS components:
 
