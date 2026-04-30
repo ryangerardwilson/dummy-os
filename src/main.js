@@ -62,9 +62,9 @@ const scenes = {
   },
   termSubsystem: {
     number: 'T4',
-    title: 'Subsystem and Tier 3',
-    summary: 'A subsystem is a specialist machine attached to the road. Tier 3 means strict governance because mistakes can affect trust, money, or the core journey.',
-    lesson: 'Do not call every important thing an OS. Ask whether it owns durable truth, or whether it is a bounded machine feeding an OS. Tier 3 is the control level.',
+    title: 'Subsystem tiers',
+    summary: 'A subsystem is a specialist machine attached to the road. Tier 1, 2, and 3 are governance levels for changes/specs, not separate species of subsystems.',
+    lesson: 'Tier 1 is polish. Tier 2 changes local behavior. Tier 3 changes system rules, states, money, trust, routing, or failure modes.',
     camera: [0, 10, 18],
     target: [0, 0, 0]
   }
@@ -548,13 +548,29 @@ function buildSubsystemTermScene() {
     'It can read signals from OSes and emit a decision, but it does not own the whole road or lifecycle.',
     'Commitment Decision Spec is this kind of bounded machine, not a full OS.'
   );
-  const tierInfo = info(
+  const tier1Info = info(
+    'T1',
+    'Tier 1',
+    'What is Tier 1?',
+    'Tier 1 is low-risk polish: the road still works the same way.',
+    'Examples: copy change, spacing fix, known bug fix, refactor with identical behavior.',
+    'Tier 1 should not change rules, states, contracts, money, routing, or trust.'
+  );
+  const tier2Info = info(
+    'T2',
+    'Tier 2',
+    'What is Tier 2?',
+    'Tier 2 changes behavior in one local place while staying inside existing road rules.',
+    'Examples: new validation, new screen in an existing flow, new notification, new backend call inside an existing contract.',
+    'Tier 2 needs normal review because behavior changes, but the road system is not being redesigned.'
+  );
+  const tier3Info = info(
     'T3',
-    'Tier 3 control lane',
+    'Tier 3',
     'What is Tier 3?',
-    'Tier 3 is the strictest governance lane for high-blast-radius changes.',
-    'It requires boundaries, contracts, observability, recovery rules, and a kill plan.',
-    'Tier 3 means high-control governance, not third-class importance.'
+    'Tier 3 changes system rules, states, trust surface, economics, routing, or failure modes.',
+    'Examples: new state machine, entitlement logic, assignment logic, payout logic, irreversible action, policy change.',
+    'Calling Genie Tier 3 means it needs Tier 3 governance, not that it is a third-class subsystem.'
   );
   const signalInfo = info(
     'IN/OUT',
@@ -569,7 +585,7 @@ function buildSubsystemTermScene() {
   addRoad(18, 4.3, 0);
 
   addCheckpoint('OS owns truth', 5.8, palette.green, osInfo, 0);
-  addRoadSign('CL / D&A / ACS', 6.2, -3.35, palette.green, osInfo);
+  addRoadSign('CL / D&A / Asset Custody', 6.2, -3.35, palette.green, osInfo);
 
   const machineBase = box(3.5, 0.24, 3.05, palette.paper, { x: -1.4, y: 0.18, z: 0 });
   const machineGateLeft = box(0.18, 1.7, 0.18, palette.teal, { x: -2.9, y: 0.92, z: -1.28 });
@@ -582,15 +598,26 @@ function buildSubsystemTermScene() {
   });
   addLabel('bounded subsystem machine', -1.4, 1.98, -1.28, 'label label--station');
 
-  const tierTower = box(1.2, 2.2, 1.2, palette.teal, { x: -6.2, y: 1.1, z: 3.25 });
-  const killSwitch = box(0.82, 0.3, 0.82, palette.red, { x: -6.2, y: 2.38, z: 3.25 });
-  [tierTower, killSwitch].forEach((part) => {
-    part.userData.info = tierInfo;
-    interactiveMeshes.push(part);
-    root.add(part);
+  const tierLanes = [
+    ['T1 polish', -6.4, 3.35, 0.62, palette.blue, tier1Info],
+    ['T2 local behavior', -4.35, 3.35, 1.12, palette.violet, tier2Info],
+    ['T3 system risk', -2.1, 3.35, 1.78, palette.teal, tier3Info]
+  ];
+  tierLanes.forEach(([label, x, z, height, color, infoObject]) => {
+    const lane = box(1.42, 0.12, 1.42, color, { x, y: 0.1, z });
+    const tower = box(0.76, height, 0.76, color, { x, y: height / 2 + 0.18, z });
+    [lane, tower].forEach((part) => {
+      part.userData.info = infoObject;
+      interactiveMeshes.push(part);
+      root.add(part);
+    });
+    addLabel(label, x, height + 0.78, z, 'label label--station');
   });
-  addLabel('tier 3 controls', -6.2, 2.86, 3.25, 'label label--station');
-  addRoadSign('kill plan', -4.7, 3.35, palette.red, tierInfo);
+  const killSwitch = box(0.82, 0.3, 0.82, palette.red, { x: -2.1, y: 2.28, z: 3.35 });
+  killSwitch.userData.info = tier3Info;
+  interactiveMeshes.push(killSwitch);
+  root.add(killSwitch);
+  addRoadSign('kill plan only at T3', -0.1, 3.35, palette.red, tier3Info);
 
   const signalTowers = [
     ['OS signal', -5.5, -3.25],

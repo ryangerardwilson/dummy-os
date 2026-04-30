@@ -83,7 +83,7 @@
             <button class="view-button" data-scene="termPrimitives">Primitives + guards</button>
             <button class="view-button" data-scene="termParameters">Parameters</button>
             <button class="view-button" data-scene="termState">State machine</button>
-            <button class="view-button" data-scene="termSubsystem">Subsystem + Tier 3</button>
+            <button class="view-button" data-scene="termSubsystem">Subsystem tiers</button>
           </div>
         </footer>
 
@@ -128,9 +128,10 @@
             <article>
               <span>04</span>
               <p>
-                <strong>Tier 3 subsystem</strong> means the machine has high
-                blast radius, so it needs strict governance: clear boundaries,
-                interface contracts, observability, recovery rules, and a kill plan.
+                <strong>Tiers</strong> classify risk. Tier 1 is polish. Tier 2
+                changes local behavior. Tier 3 changes system rules, states,
+                money, routing, trust, or failure modes. They are spec/change
+                tiers, not separate types of subsystems.
               </p>
             </article>
             <article>
@@ -174,7 +175,8 @@
             <h2 id="orderBriefTitle">Read the map from authority to artifact</h2>
             <p>
               Most confusion comes from mixing levels. An OS, a subsystem, a
-              spec, a service, and a signal are not interchangeable names.
+              tier, a spec, a service, and a signal are not interchangeable names.
+              The tier is the governance weight of the change, not a new authority.
             </p>
           </div>
 
@@ -210,11 +212,12 @@
 
             <article class="order-item order-item--featured">
               <span>04</span>
-              <h3>Tier 3 subsystem</h3>
+              <h3>Tier ladder for specs</h3>
               <p>
-                A subsystem whose mistake can hit customer trust, money, routing,
-                lifecycle state, or system behavior. Tier 3 means stricter spec
-                discipline, not lower importance.
+                Tier 1 is low-risk polish. Tier 2 is a local behavior change.
+                Tier 3 is system-level risk: new states, rules, money, routing,
+                trust, or failure modes. So “Tier 3 subsystem” really means:
+                this subsystem must be governed with Tier 3 controls.
               </p>
             </article>
 
@@ -242,7 +245,8 @@
           <div class="classification-strip" aria-label="Common classification fixes">
             <p>
               <strong>Commitment Decision Spec (formerly Genie)</strong>:
-              Tier 3 subsystem plus bounded decision spec. Not an OS.
+              bounded subsystem governed at Tier 3 because promise decisions
+              affect trust, routing, lifecycle handoff, and failure modes. Not an OS.
             </p>
             <p>
               <strong>Asset Custody Lifecycle</strong>: OS authority. It owns
@@ -277,7 +281,8 @@
               </p>
               <p>
                 Important: Satyam did not accept this as a full OS. He accepted
-                it as a bounded decision spec / subsystem that feeds the real OS map.
+                it as a bounded decision spec / subsystem. Tier 3 is the
+                governance level because the promise decision changes system behavior.
               </p>
             </article>
 
@@ -427,8 +432,9 @@
           <div class="handoff-strip" aria-label="Customer journey through actual OSes">
             <h3>For a dummy, read the handoff like this</h3>
             <p>
-              Commitment Decision Spec (formerly Genie) is the Tier 3 subsystem
-              that says whether Wiom should promise. CL creates and tracks the
+              Commitment Decision Spec (formerly Genie) is a bounded subsystem
+              governed at Tier 3 because it says whether Wiom should promise.
+              CL creates and tracks the
               connection. D&amp;A chooses who serves. Capacity &amp; Coverage tells D&amp;A
               what supply is real. Quality measures execution. Enforcement
               changes CSP posture. Exit closes bad or voluntary departures.
@@ -447,7 +453,9 @@
               <p>
                 Commitment Decision Spec (formerly Genie) decides whether Wiom
                 can safely say yes. It is a bounded subsystem, not the lifecycle
-                owner. If the answer is COMMIT, the journey can create a connection request.
+                owner. It is Tier 3 because a wrong yes/no can affect trust and
+                downstream routing. If the answer is COMMIT, the journey can
+                create a connection request.
               </p>
               <p>
                 CL OS then owns the connection lifecycle. From that point, the
@@ -507,6 +515,7 @@
             <ul>
               <li>Should Wiom promise? Commitment Decision Spec.</li>
               <li>Is it a full OS or a bounded subsystem? Check whether it owns lifecycle truth.</li>
+              <li>What tier is the change? Tier 1 polish, Tier 2 local behavior, Tier 3 system risk.</li>
               <li>What state is the connection in? CL OS.</li>
               <li>Who should serve it? D&amp;A OS.</li>
               <li>Where can we serve and at what capacity? Capacity &amp; Coverage OS.</li>
