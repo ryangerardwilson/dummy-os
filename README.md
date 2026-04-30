@@ -23,9 +23,9 @@ The central metaphor:
 
 The page is organized into five sections:
 
-- 1. Wiom OS for 5 year olds: explains one customer request as a car moving through the road.
+- 1. Wiom OS Basic Concepts: explains one customer request as a car moving through the road.
 - 2. What SD has created?: stitches the car metaphor back to the OS document structure.
-- 3. Wiom OS for a Rocket Scientist: animates the wider Wiom system of demand, supply, assets, money, quality, support, and access.
+- 3. Wiom OS Advanced Concepts: animates the wider Wiom system of demand, supply, assets, money, quality, support, and access.
 - 4. Read the map from authority to artifact: explains the taxonomy order.
 - 5. The real OS authorities people are confused by: maps the actual OS authorities.
 
