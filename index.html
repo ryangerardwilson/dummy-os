@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dummy-os</title>
+    <meta
+      name="description"
+      content="A Three.js visual translator for understanding Wiom OS documents without technical jargon."
+    />
+  </head>
+  <body>
+    <main id="app">
+      <section class="shell" aria-label="dummy-os visual workspace">
+        <header class="masthead">
+          <div>
+            <p class="eyebrow">dummy-os</p>
+            <h1>Explain OS docs with a car on a road.</h1>
+          </div>
+          <p class="thesis">
+            A customer request is the car. The business journey is the road.
+            The OS document is the driving manual that keeps the car moving
+            safely through the right checkpoints.
+          </p>
+        </header>
+
+        <section class="workspace">
+          <div class="stage" id="stage" aria-label="Interactive Three.js explainer">
+            <p class="scene-summary" id="sceneSummary">
+              The customer request is the car. The business journey is the road.
+              The OS document is the driving manual.
+            </p>
+          </div>
+
+          <aside class="inspector" aria-live="polite">
+            <div class="inspector__topline">
+              <span id="selectedKicker">Story object</span>
+              <span id="selectedCode">CAR</span>
+            </div>
+            <p class="question" id="selectedQuestion">What is the car?</p>
+            <h2 id="selectedName">Customer request car</h2>
+            <p id="selectedSummary">
+              The car is one customer request trying to move through Wiom.
+            </p>
+
+            <dl class="facts">
+              <div>
+                <dt>For a dummy</dt>
+                <dd id="selectedPlain">Think "customer request on a road", not Linux.</dd>
+              </div>
+              <div>
+                <dt>What it controls</dt>
+                <dd id="selectedControls">The route, checkpoints, rules, and official decisions.</dd>
+              </div>
+              <div>
+                <dt>What to remember</dt>
+                <dd id="selectedRemember">The car should not take random shortcuts.</dd>
+              </div>
+            </dl>
+
+            <div class="scene-notes">
+              <p>Scene lesson</p>
+              <strong id="sceneLesson">
+                Do not start with architecture words. Start with this: a car
+                should move safely from start to finish without everyone
+                inventing their own traffic rules.
+              </strong>
+            </div>
+          </aside>
+        </section>
+
+        <footer class="controls" aria-label="Visual scene controls">
+          <button class="view-button is-active" data-scene="car">1. Car story</button>
+          <button class="view-button" data-scene="rules">2. Road rules</button>
+          <button class="view-button" data-scene="checkpoints">3. Checkpoints</button>
+          <button class="view-button" data-scene="wrongTurn">4. Wrong turn</button>
+        </footer>
+      </section>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
