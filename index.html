@@ -69,60 +69,18 @@
             <article>
               <span>02</span>
               <p>
-                Each OS is a <strong>checkpoint</strong> with one job. Coverage
-                checks if the location can be served. Allocation chooses who
-                serves the customer. Lifecycle tracks where the customer is in
-                the journey.
+                Each OS is a <strong>checkpoint</strong> with one owned truth.
+                Subsystems are specialist machines that help those checkpoints;
+                they are not allowed to become secret OSes.
               </p>
             </article>
             <article>
               <span>03</span>
               <p>
-                Not every important thing is an OS. A <strong>subsystem</strong>
-                is a specialist machine inside Wiom that does one bounded job.
-                It can feed OSes, but it should not claim their full lifecycle truth.
-              </p>
-            </article>
-            <article>
-              <span>04</span>
-              <p>
-                <strong>Tiers</strong> classify risk. Tier 1 is polish. Tier 2
-                changes local behavior. Tier 3 changes system rules, states,
-                money, routing, trust, or failure modes. They are spec/change
-                tiers, not separate types of subsystems.
-              </p>
-            </article>
-            <article>
-              <span>05</span>
-              <p>
-                <strong>Road laws</strong> are truths that must always hold.
-                <strong>Boundaries</strong> say who owns the lane.
-                <strong>Guards</strong> block the car when someone tries to
-                jump across that boundary.
-              </p>
-            </article>
-            <article>
-              <span>06</span>
-              <p>
-                <strong>Parameters</strong> are the numbers on the signs: radius,
-                wait time, cap, threshold, retry count. You can tune them
-                without rebuilding the whole road.
-              </p>
-            </article>
-            <article>
-              <span>07</span>
-              <p>
-                The <strong>state machine</strong> says which bay the car is in
-                right now and which move is allowed next. That stops random
-                jumps, duplicate work, and unclear ownership.
-              </p>
-            </article>
-            <article>
-              <span>08</span>
-              <p>
-                The point of the whole map is simple: keep the customer car on
-                the right road, through the right checkpoints, with clear rules
-                for what is allowed, blocked, and tunable.
+                The rule layer keeps the car safe: <strong>tiers</strong>
+                classify risk, <strong>laws, boundaries, and guards</strong>
+                block bad jumps, <strong>parameters</strong> tune behavior, and
+                the <strong>state machine</strong> defines the next allowed move.
               </p>
             </article>
           </div>
