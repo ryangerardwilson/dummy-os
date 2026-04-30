@@ -31,7 +31,7 @@ The deep-dive scenes explain confusing terms:
 
 The text sections then stitch the metaphor back to Satyam's actual OS map:
 
-- Genie / Commitment Decision Spec: should Wiom promise service?
+- Commitment Decision Spec (formerly Genie): should Wiom promise service?
 - CL OS: what state is the connection in?
 - D&A OS: who should serve the connection?
 - Capacity & Coverage OS: where can Wiom serve, who is eligible, and how much capacity exists?
