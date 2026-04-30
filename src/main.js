@@ -77,6 +77,7 @@ const palette = {
 };
 
 const stage = document.querySelector('#stage');
+const macroStage = document.querySelector('#macroStage');
 const sceneSummary = document.querySelector('#sceneSummary');
 const sceneLesson = document.querySelector('#sceneLesson');
 const selectedKicker = document.querySelector('#selectedKicker');
@@ -125,6 +126,7 @@ let currentSceneId = 'car';
 addLights();
 addBackdrop();
 setScene('car');
+const macroSystem = macroStage ? initMacroScene(macroStage) : null;
 
 sceneButtons.forEach((button) => {
   button.addEventListener('click', () => setScene(button.dataset.scene));
@@ -625,6 +627,185 @@ function buildSubsystemTermScene() {
   selectInfo(tier3Info);
 }
 
+function initMacroScene(container) {
+  const macroScene = new THREE.Scene();
+  macroScene.fog = new THREE.FogExp2(0x05080d, 0.028);
+
+  const macroCamera = new THREE.PerspectiveCamera(44, container.clientWidth / container.clientHeight, 0.1, 1000);
+  macroCamera.position.set(0, 10.5, 15.5);
+  macroCamera.lookAt(0, 0, 0);
+
+  const macroRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  macroRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  macroRenderer.setSize(container.clientWidth, container.clientHeight);
+  macroRenderer.outputColorSpace = THREE.SRGBColorSpace;
+  container.appendChild(macroRenderer.domElement);
+
+  const macroLabelRenderer = new CSS2DRenderer();
+  macroLabelRenderer.setSize(container.clientWidth, container.clientHeight);
+  macroLabelRenderer.domElement.className = 'label-layer label-layer--macro';
+  container.appendChild(macroLabelRenderer.domElement);
+
+  macroScene.add(new THREE.AmbientLight(0xc5dcff, 1.25));
+  const key = new THREE.DirectionalLight(0xffffff, 2.6);
+  key.position.set(8, 13, 10);
+  macroScene.add(key);
+  const rim = new THREE.PointLight(0x5fffe1, 10, 44);
+  rim.position.set(-7, 6, -8);
+  macroScene.add(rim);
+
+  const macroRoot = new THREE.Group();
+  macroScene.add(macroRoot);
+
+  const starGeometry = new THREE.BufferGeometry();
+  const starCount = 500;
+  const starPositions = new Float32Array(starCount * 3);
+  for (let i = 0; i < starCount; i += 1) {
+    starPositions[i * 3] = (Math.random() - 0.5) * 56;
+    starPositions[i * 3 + 1] = (Math.random() - 0.1) * 26;
+    starPositions[i * 3 + 2] = (Math.random() - 0.5) * 56;
+  }
+  starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+  macroScene.add(
+    new THREE.Points(
+      starGeometry,
+      new THREE.PointsMaterial({ color: 0x8db4ff, size: 0.028, transparent: true, opacity: 0.32 })
+    )
+  );
+
+  const ground = box(16, 0.04, 11, palette.grass, { y: -0.08 });
+  ground.material.opacity = 0.5;
+  ground.material.transparent = true;
+  macroRoot.add(ground);
+
+  const grid = new THREE.GridHelper(16, 16, 0x23445c, 0x102434);
+  grid.position.y = -0.03;
+  grid.material.opacity = 0.22;
+  grid.material.transparent = true;
+  macroRoot.add(grid);
+
+  const flows = [];
+  const nodeGroups = [];
+
+  const points = {
+    customers: new THREE.Vector3(-6.2, 0.45, 0),
+    wiom: new THREE.Vector3(0, 0.55, 0),
+    csp: new THREE.Vector3(6.2, 0.45, 0),
+    assets: new THREE.Vector3(0, 0.45, -4.2),
+    money: new THREE.Vector3(0, 0.45, 4.2),
+    support: new THREE.Vector3(-4.7, 0.45, 3.35),
+    quality: new THREE.Vector3(4.7, 0.45, -3.35)
+  };
+
+  addMacroNode('CUSTOMERS / DEMAND', points.customers, palette.green, 'houses');
+  addMacroNode('CSP SUPPLY', points.csp, palette.blue, 'people');
+  addMacroNode('NETBOX ASSETS', points.assets, palette.yellow, 'boxes');
+  addMacroNode('RECHARGE + PAYMENT', points.money, palette.green, 'money');
+  addMacroNode('SUPPORT', points.support, palette.red, 'support');
+  addMacroNode('QUALITY + ENFORCEMENT', points.quality, palette.violet, 'quality');
+
+  const hubBase = cylinder(1.55, 0.3, palette.teal, { x: 0, y: 0.14, z: 0 });
+  const hubCore = box(2.55, 0.85, 1.55, palette.paper, { x: 0, y: 0.72, z: 0 });
+  [hubBase, hubCore].forEach((part) => macroRoot.add(part));
+  addMacroLabel(macroRoot, 'WIOM OS LAYER', 0, 1.42, 0, 'label label--station');
+
+  [
+    ['COMMIT', -1.55, -1.25, palette.teal],
+    ['CL', -1.55, 1.25, palette.yellow],
+    ['D&A', 1.55, -1.25, palette.green],
+    ['PAY', 1.55, 1.25, palette.green],
+    ['ASSET', 0, -1.85, palette.yellow],
+    ['QUALITY', 0, 1.85, palette.violet]
+  ].forEach(([label, x, z, colorValue]) => {
+    const satellite = box(0.72, 0.24, 0.48, colorValue, { x, y: 0.28, z });
+    macroRoot.add(satellite);
+    addMacroLabel(macroRoot, label, x, 0.64, z, 'label label--caption');
+  });
+
+  addFlow(points.customers, points.wiom, palette.green, 0.16, 0, { z: -1.8, y: 2.1 });
+  addFlow(points.wiom, points.csp, palette.teal, 0.14, 0.12, { z: -1.6, y: 2.4 });
+  addFlow(points.assets, points.csp, palette.yellow, 0.12, 0.25, { x: 2.5, y: 2.2 });
+  addFlow(points.csp, points.customers, palette.blue, 0.1, 0.4, { z: 1.8, y: 2.0 });
+  addFlow(points.customers, points.money, palette.yellow, 0.13, 0.52, { x: -2.9, y: 2.6 });
+  addFlow(points.money, points.csp, palette.green, 0.12, 0.66, { x: 3.2, y: 2.4 });
+  addFlow(points.customers, points.support, palette.red, 0.1, 0.18, { x: -5.6, y: 1.7 });
+  addFlow(points.support, points.quality, palette.violet, 0.09, 0.34, { y: 3.2 });
+  addFlow(points.quality, points.wiom, palette.violet, 0.12, 0.78, { x: 2.5, y: 2.2 });
+  addFlow(points.wiom, points.customers, palette.teal, 0.11, 0.9, { z: 1.7, y: 2.2 });
+
+  function addMacroNode(label, position, colorValue, type) {
+    const group = new THREE.Group();
+    group.position.copy(position);
+
+    const base = cylinder(0.72, 0.18, colorValue, { y: 0.08 });
+    group.add(base);
+
+    if (type === 'houses') {
+      [-0.42, 0, 0.42].forEach((x, index) => {
+        group.add(box(0.3, 0.42 + index * 0.05, 0.38, colorValue, { x, y: 0.42, z: 0 }));
+        group.add(box(0.36, 0.08, 0.44, palette.white, { x, y: 0.68 + index * 0.05, z: 0, rotZ: 0.18 }));
+      });
+    } else if (type === 'boxes') {
+      [-0.34, 0.04, 0.42].forEach((x, index) => {
+        group.add(box(0.38, 0.38, 0.38, colorValue, { x, y: 0.38 + index * 0.1, z: index % 2 === 0 ? -0.1 : 0.18 }));
+      });
+    } else if (type === 'money') {
+      group.add(cylinder(0.42, 0.16, colorValue, { y: 0.38 }));
+      group.add(cylinder(0.42, 0.16, colorValue, { y: 0.58 }));
+      group.add(cylinder(0.42, 0.16, colorValue, { y: 0.78 }));
+    } else {
+      group.add(box(0.95, 0.78, 0.7, colorValue, { y: 0.48 }));
+      group.add(cylinder(0.24, 0.22, palette.white, { y: 1.0 }));
+    }
+
+    macroRoot.add(group);
+    nodeGroups.push(group);
+    addMacroLabel(macroRoot, label, position.x, 1.45, position.z, 'label label--station');
+    return group;
+  }
+
+  function addFlow(start, end, colorValue, speed, offset, controlShift = {}) {
+    const control = start.clone().lerp(end, 0.5);
+    control.x += controlShift.x ?? 0;
+    control.y += controlShift.y ?? 2;
+    control.z += controlShift.z ?? 0;
+    const curve = new THREE.QuadraticBezierCurve3(start, control, end);
+    const geometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(72));
+    const path = new THREE.Line(
+      geometry,
+      new THREE.LineBasicMaterial({ color: colorValue, transparent: true, opacity: 0.44 })
+    );
+    macroRoot.add(path);
+
+    const token = sphere(0.13, colorValue);
+    macroRoot.add(token);
+    flows.push({ curve, token, speed, offset });
+  }
+
+  return {
+    resize() {
+      macroCamera.aspect = container.clientWidth / container.clientHeight;
+      macroCamera.updateProjectionMatrix();
+      macroRenderer.setSize(container.clientWidth, container.clientHeight);
+      macroLabelRenderer.setSize(container.clientWidth, container.clientHeight);
+    },
+    tick(elapsed) {
+      flows.forEach((flow, index) => {
+        const progress = (elapsed * flow.speed + flow.offset) % 1;
+        flow.curve.getPointAt(progress, flow.token.position);
+        flow.token.scale.setScalar(1 + Math.sin(elapsed * 4 + index) * 0.18);
+      });
+      nodeGroups.forEach((group, index) => {
+        group.position.y = Math.sin(elapsed * 1.5 + index) * 0.035;
+      });
+      macroRoot.rotation.y = Math.sin(elapsed * 0.12) * 0.05;
+      hubCore.rotation.y = Math.sin(elapsed * 0.7) * 0.08;
+      macroRenderer.render(macroScene, macroCamera);
+      macroLabelRenderer.render(macroScene, macroCamera);
+    }
+  };
+}
+
 function checkpointInfo(code, name, question, plain) {
   return info(
     code,
@@ -797,6 +978,20 @@ function cylinder(radius, height, colorValue, transform = {}) {
   return mesh;
 }
 
+function sphere(radius, colorValue, transform = {}) {
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(radius, 24, 16),
+    new THREE.MeshStandardMaterial({
+      color: colorValue,
+      emissive: new THREE.Color(colorValue).multiplyScalar(0.22),
+      roughness: 0.28,
+      metalness: 0.18
+    })
+  );
+  mesh.position.set(transform.x ?? 0, transform.y ?? 0, transform.z ?? 0);
+  return mesh;
+}
+
 function line(start, end, colorValue, opacity) {
   const geometry = new THREE.BufferGeometry().setFromPoints([start, end]);
   return new THREE.Line(
@@ -816,6 +1011,16 @@ function addLabel(text, x, y, z, className) {
   const labelObject = new CSS2DObject(label);
   labelObject.position.set(x, y, z);
   root.add(labelObject);
+  return labelObject;
+}
+
+function addMacroLabel(parent, text, x, y, z, className) {
+  const label = document.createElement('div');
+  label.className = className;
+  label.textContent = text;
+  const labelObject = new CSS2DObject(label);
+  labelObject.position.set(x, y, z);
+  parent.add(labelObject);
   return labelObject;
 }
 
@@ -861,6 +1066,7 @@ function onResize() {
   camera.updateProjectionMatrix();
   renderer.setSize(stage.clientWidth, stage.clientHeight);
   labelRenderer.setSize(stage.clientWidth, stage.clientHeight);
+  macroSystem?.resize();
 }
 
 function animate() {
@@ -871,4 +1077,5 @@ function animate() {
   controls.update();
   renderer.render(threeScene, camera);
   labelRenderer.render(threeScene, camera);
+  macroSystem?.tick(elapsed);
 }

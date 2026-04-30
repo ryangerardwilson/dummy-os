@@ -1,7 +1,7 @@
 # dummy-os
 
 Three.js visual translator for explaining Wiom OS documents to non-technical
-users through a car-on-road story.
+users through a numbered micro-to-macro story.
 
 The central metaphor:
 
@@ -21,7 +21,15 @@ The central metaphor:
 
 ## Scenes
 
-The main journey explains the whole OS structure:
+The page is organized into five sections:
+
+- 1. Micro Economics of Wiom: explains one customer request as a car moving through the road.
+- 2. What SD has created?: stitches the car metaphor back to the OS document structure.
+- 3. Macro-economics of Wiom: animates the wider Wiom system of demand, supply, assets, money, quality, support, and access.
+- 4. Read the map from authority to artifact: explains the taxonomy order.
+- 5. The real OS authorities people are confused by: maps the actual OS authorities.
+
+The main micro journey explains the single-customer flow:
 
 - Car story: introduces the car, road, and driving manual.
 - Road rules: shows laws, boundaries, and guards as traffic laws, owner lanes, and blocked shortcuts.
