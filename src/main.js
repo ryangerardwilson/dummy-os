@@ -62,26 +62,26 @@ const scenes = {
   },
   termSubsystem: {
     number: 'T4',
-    title: 'Subsystem tiers',
-    summary: 'A subsystem is a specialist machine attached to the road. Tier 1, 2, and 3 are governance levels for changes/specs, not separate species of subsystems.',
-    lesson: 'Tier 1 is polish. Tier 2 changes local behavior. Tier 3 changes system rules, states, money, trust, routing, or failure modes.',
-    camera: [0, 10, 18],
+    title: 'Roadwork tiers',
+    summary: 'Think of tiers as roadwork permits. Tier 1 repaints a sign. Tier 2 adds a local detour. Tier 3 rebuilds the junction and needs rollback controls.',
+    lesson: 'The bigger the blast radius, the stricter the permit. Tier 3 is not a different kind of subsystem; it is the control level for risky system change.',
+    camera: [0, 11.5, 19],
     target: [0, 0, 0]
   }
 };
 
 const palette = {
-  asphalt: '#1f1f23',
-  lane: '#ffffff',
-  grass: '#efeff1',
-  teal: '#e5178f',
-  green: '#e5178f',
-  yellow: '#ffffff',
-  red: '#111111',
-  blue: '#d8d8de',
-  violet: '#c5c5cc',
-  white: '#ffffff',
-  paper: '#f7f7f8'
+  asphalt: '#222c34',
+  lane: '#f2d36b',
+  grass: '#123629',
+  teal: '#5fffe1',
+  green: '#62d6a4',
+  yellow: '#f2b84b',
+  red: '#ff735c',
+  blue: '#7fc7ff',
+  violet: '#c9a7ff',
+  white: '#eef8ff',
+  paper: '#f4d7a1'
 };
 
 const stage = document.querySelector('#stage');
@@ -98,7 +98,7 @@ const selectedRemember = document.querySelector('#selectedRemember');
 const sceneButtons = document.querySelectorAll('.view-button');
 
 const threeScene = new THREE.Scene();
-threeScene.fog = new THREE.FogExp2(0xf7f7f8, 0.025);
+threeScene.fog = new THREE.FogExp2(0x05080d, 0.033);
 
 const camera = new THREE.PerspectiveCamera(42, stage.clientWidth / stage.clientHeight, 0.1, 1000);
 camera.position.set(0, 8.5, 15);
@@ -532,120 +532,138 @@ function buildStateTermScene() {
 }
 
 function buildSubsystemTermScene() {
-  const osInfo = info(
-    'OS',
-    'OS authority checkpoint',
-    'What is an OS?',
-    'An OS is the official checkpoint that owns one durable business truth.',
-    'Example: CL owns connection state, D&A owns who serves, Asset Custody owns device custody.',
-    'If it owns the truth and lifecycle, call it an OS.'
-  );
   const subsystemInfo = info(
     'SUB',
-    'Subsystem machine',
+    'Subsystem worksite',
     'What is a subsystem?',
-    'A subsystem is a specialist machine inside Wiom that does one bounded job.',
-    'It can read signals from OSes and emit a decision, but it does not own the whole road or lifecycle.',
-    'Commitment Decision Spec is this kind of bounded machine, not a full OS.'
+    'A subsystem is a specialist worksite attached to the Wiom road.',
+    'It performs one bounded job, like checking whether Wiom should promise service.',
+    'It can help the road, but it does not own every checkpoint or the whole journey.'
   );
   const tier1Info = info(
     'T1',
-    'Tier 1',
+    'Tier 1: repaint the sign',
     'What is Tier 1?',
-    'Tier 1 is low-risk polish: the road still works the same way.',
-    'Examples: copy change, spacing fix, known bug fix, refactor with identical behavior.',
-    'Tier 1 should not change rules, states, contracts, money, routing, or trust.'
+    'Tier 1 is a small polish job. The car drives the same road in the same way.',
+    'Example: copy change, spacing fix, known bug fix, or refactor with identical behavior.',
+    'If the route, rules, money, states, and trust do not change, this is Tier 1.'
   );
   const tier2Info = info(
     'T2',
-    'Tier 2',
+    'Tier 2: local detour',
     'What is Tier 2?',
-    'Tier 2 changes behavior in one local place while staying inside existing road rules.',
-    'Examples: new validation, new screen in an existing flow, new notification, new backend call inside an existing contract.',
-    'Tier 2 needs normal review because behavior changes, but the road system is not being redesigned.'
+    'Tier 2 changes one local stretch of road, but the wider road system stays the same.',
+    'Example: new validation, new screen in an existing flow, notification, or backend call inside an existing contract.',
+    'The car may bend around a cone, but it does not enter a new highway system.'
   );
   const tier3Info = info(
     'T3',
-    'Tier 3',
+    'Tier 3: rebuild the junction',
     'What is Tier 3?',
-    'Tier 3 changes system rules, states, trust surface, economics, routing, or failure modes.',
-    'Examples: new state machine, entitlement logic, assignment logic, payout logic, irreversible action, policy change.',
-    'Calling Genie Tier 3 means it needs Tier 3 governance, not that it is a third-class subsystem.'
-  );
-  const signalInfo = info(
-    'IN/OUT',
-    'Signals in, decision out',
-    'How does a subsystem connect?',
-    'It reads declared signals, makes one governed decision, and passes that decision onward.',
-    'Hidden inputs and side effects are not allowed because they make the road untrustworthy.',
-    'A subsystem plugs into the OS map through contracts.'
+    'Tier 3 changes the junction: rules, states, money, routing, trust, or failure modes.',
+    'Example: promise decision logic, state machine, entitlement, assignment, payout, irreversible action, or policy change.',
+    'This needs a full permit, rollback road, observability, and kill switch because many cars can be affected.'
   );
 
   addGround();
-  addRoad(18, 4.3, 0);
+  addRoad(17.5, 1.55, -3.35);
+  addRoad(17.5, 1.55, 0);
+  addRoad(17.5, 1.55, 3.35);
 
-  addCheckpoint('OS owns truth', 5.8, palette.green, osInfo, 0);
-  addRoadSign('CL / D&A / Asset Custody', 6.2, -3.35, palette.green, osInfo);
+  const worksite = box(2.2, 0.22, 1.28, palette.paper, { x: -7.0, y: 0.18, z: 0 });
+  worksite.userData.info = subsystemInfo;
+  interactiveMeshes.push(worksite);
+  root.add(worksite);
+  addLabel('subsystem worksite', -7.0, 0.58, 0, 'label label--station');
 
-  const machineBase = box(3.5, 0.24, 3.05, palette.paper, { x: -1.4, y: 0.18, z: 0 });
-  const machineGateLeft = box(0.18, 1.7, 0.18, palette.teal, { x: -2.9, y: 0.92, z: -1.28 });
-  const machineGateRight = box(0.18, 1.7, 0.18, palette.teal, { x: 0.1, y: 0.92, z: -1.28 });
-  const machineGateTop = box(3.18, 0.18, 0.18, palette.teal, { x: -1.4, y: 1.72, z: -1.28 });
-  [machineBase, machineGateLeft, machineGateRight, machineGateTop].forEach((part) => {
-    part.userData.info = subsystemInfo;
+  addRoadSign('T1: repaint sign', -4.85, -4.75, palette.green, tier1Info);
+  addRoadSign('COPY FIX', 0.2, -4.75, palette.paper, tier1Info);
+  const paintTray = box(1.0, 0.08, 0.52, palette.teal, { x: 1.55, y: 0.16, z: -4.1 });
+  const paintRoller = box(0.95, 0.08, 0.12, palette.teal, { x: 2.45, y: 0.28, z: -4.1, rotZ: 0.24 });
+  [paintTray, paintRoller].forEach((part) => {
+    part.userData.info = tier1Info;
     interactiveMeshes.push(part);
     root.add(part);
   });
-  addLabel('bounded subsystem machine', -1.4, 1.98, -1.28, 'label label--station');
 
-  const tierLanes = [
-    ['T1 polish', -6.4, 3.35, 0.62, palette.blue, tier1Info],
-    ['T2 local behavior', -4.35, 3.35, 1.12, palette.violet, tier2Info],
-    ['T3 system risk', -2.1, 3.35, 1.78, palette.teal, tier3Info]
-  ];
-  tierLanes.forEach(([label, x, z, height, color, infoObject]) => {
-    const lane = box(1.42, 0.12, 1.42, color, { x, y: 0.1, z });
-    const tower = box(0.76, height, 0.76, color, { x, y: height / 2 + 0.18, z });
-    [lane, tower].forEach((part) => {
-      part.userData.info = infoObject;
-      interactiveMeshes.push(part);
-      root.add(part);
-    });
-    addLabel(label, x, height + 0.78, z, 'label label--station');
+  addRoadSign('T2: local detour', -4.85, -1.4, palette.violet, tier2Info);
+  const detourPatch = box(2.0, 0.16, 1.1, palette.red, { x: -0.3, y: 0.14, z: 0 });
+  detourPatch.userData.info = tier2Info;
+  interactiveMeshes.push(detourPatch);
+  root.add(detourPatch);
+  addLabel('one blocked patch', -0.3, 0.72, 0, 'label label--station');
+  [-1.35, -0.65, 0.05, 0.75].forEach((x) => {
+    const cone = cylinder(0.12, 0.42, palette.teal, { x, y: 0.34, z: -0.9 });
+    cone.userData.info = tier2Info;
+    interactiveMeshes.push(cone);
+    root.add(cone);
   });
-  const killSwitch = box(0.82, 0.3, 0.82, palette.red, { x: -2.1, y: 2.28, z: 3.35 });
+
+  addRoadSign('T3: rebuild junction', -4.85, 1.95, palette.teal, tier3Info);
+  const junction = box(3.35, 0.16, 2.55, palette.paper, { x: -0.2, y: 0.14, z: 3.35 });
+  const gate = box(0.16, 1.2, 2.2, palette.red, { x: -1.8, y: 0.7, z: 3.35 });
+  const controlTower = box(1.0, 1.65, 1.0, palette.teal, { x: 1.95, y: 0.9, z: 4.75 });
+  [junction, gate, controlTower].forEach((part) => {
+    part.userData.info = tier3Info;
+    interactiveMeshes.push(part);
+    root.add(part);
+  });
+  addLabel('new rules + states', -0.2, 0.72, 3.35, 'label label--station');
+  addLabel('control room', 1.95, 1.88, 4.75, 'label label--station');
+
+  const rollbackRoad = box(5.0, 0.1, 0.82, palette.asphalt, { x: 2.75, y: 0.07, z: 5.75, rotY: -0.28 });
+  rollbackRoad.userData.info = tier3Info;
+  interactiveMeshes.push(rollbackRoad);
+  root.add(rollbackRoad);
+  addLabel('rollback road', 3.35, 0.45, 5.7, 'label label--station');
+
+  const killSwitch = box(0.82, 0.3, 0.82, palette.red, { x: 3.35, y: 1.95, z: 4.75 });
   killSwitch.userData.info = tier3Info;
   interactiveMeshes.push(killSwitch);
   root.add(killSwitch);
-  addRoadSign('kill plan only at T3', -0.1, 3.35, palette.red, tier3Info);
+  addLabel('kill switch', 3.35, 2.36, 4.75, 'label label--station');
 
-  const signalTowers = [
-    ['OS signal', -5.5, -3.25],
-    ['parameter', -3.6, -3.25],
-    ['audit trail', -1.7, -3.25]
-  ];
-  signalTowers.forEach(([label, x, z]) => {
-    const tower = box(0.72, 0.9, 0.72, palette.blue, { x, y: 0.48, z });
-    tower.userData.info = signalInfo;
-    interactiveMeshes.push(tower);
-    root.add(tower);
-    addLabel(label, x, 1.12, z, 'label label--station');
-    const connector = line(new THREE.Vector3(x, 0.25, z + 0.45), new THREE.Vector3(-1.4, 0.25, -1.45), palette.teal, 0.55);
-    root.add(connector);
-  });
-  addRoadSign('decision out', 1.6, -3.25, palette.teal, signalInfo);
+  const tier1Car = createCar(info('CAR', 'Tier 1 car', 'What is happening?', 'The car drives straight through because only the sign was repainted.', 'No new behavior. No new state. No new contract.', 'Tier 1 is safe polish.'), palette.teal);
+  tier1Car.position.set(-7.4, 0.45, -3.35);
+  root.add(tier1Car);
 
-  const car = createCar(info('CAR', 'Customer car through subsystem', 'What is happening?', 'The car passes through a bounded machine before the OS checkpoint.', 'The machine can help decide, but the OS checkpoint still owns its official truth.', 'Subsystems should make the road safer, not become secret roads.'), palette.teal);
-  car.position.set(-8.0, 0.45, 0);
-  root.add(car);
+  const tier2Car = createCar(info('CAR', 'Tier 2 car', 'What is happening?', 'The car bends around one local work patch, then returns to the same road.', 'Behavior changed locally, but the whole road system did not change.', 'Tier 2 is a local detour, not a junction rebuild.'), palette.blue);
+  tier2Car.position.set(-7.4, 0.45, 0);
+  root.add(tier2Car);
+
+  const tier3Car = createCar(info('CAR', 'Tier 3 car', 'What is happening?', 'The car reaches a rebuilt junction where the system rules can change.', 'This needs a permit, rollback road, monitoring, and a kill switch.', 'Commitment Decision Spec lands here because promise mistakes can affect many downstream cars.'), palette.teal);
+  tier3Car.position.set(-7.4, 0.45, 3.35);
+  root.add(tier3Car);
+
+  const waitingCar = createCar(tier3Info, palette.blue);
+  waitingCar.position.set(-2.8, 0.45, 3.85);
+  waitingCar.scale.setScalar(0.86);
+  root.add(waitingCar);
 
   animated.push((elapsed) => {
     const phase = loopProgress(elapsed, 0.1);
-    car.position.x = THREE.MathUtils.lerp(-8.0, 7.5, phase);
-    car.position.y = 0.45 + Math.sin(elapsed * 5) * 0.02;
+    tier1Car.position.x = THREE.MathUtils.lerp(-7.4, 7.2, phase);
+    tier1Car.position.y = 0.45 + Math.sin(elapsed * 5) * 0.02;
+
+    const tier2Phase = loopProgress(elapsed + 1.3, 0.1);
+    tier2Car.position.x = THREE.MathUtils.lerp(-7.4, 7.2, tier2Phase);
+    if (tier2Car.position.x > -2.6 && tier2Car.position.x < 2.6) {
+      const detourProgress = (tier2Car.position.x + 2.6) / 5.2;
+      tier2Car.position.z = Math.sin(detourProgress * Math.PI) * 1.05;
+    } else {
+      tier2Car.position.z = 0;
+    }
+    tier2Car.position.y = 0.45 + Math.sin(elapsed * 5) * 0.02;
+
+    const tier3Phase = loopProgress(elapsed + 2.4, 0.075);
+    tier3Car.position.x = THREE.MathUtils.lerp(-7.4, 6.9, tier3Phase);
+    tier3Car.position.z = tier3Phase > 0.63 ? THREE.MathUtils.lerp(3.35, 5.1, Math.min((tier3Phase - 0.63) / 0.24, 1)) : 3.35;
+    tier3Car.position.y = 0.45 + Math.sin(elapsed * 5) * 0.02;
+    gate.rotation.z = Math.sin(elapsed * 1.4) * 0.18;
+    controlTower.rotation.y = Math.sin(elapsed * 0.7) * 0.08;
   });
 
-  selectInfo(subsystemInfo);
+  selectInfo(tier3Info);
 }
 
 function checkpointInfo(code, name, question, plain) {
@@ -672,13 +690,13 @@ function info(code, name, question, plain, controlsText, remember) {
 }
 
 function addLights() {
-  threeScene.add(new THREE.AmbientLight(0xffffff, 1.65));
+  threeScene.add(new THREE.AmbientLight(0xc5dcff, 1.3));
 
   const key = new THREE.DirectionalLight(0xffffff, 2.8);
   key.position.set(8, 13, 10);
   threeScene.add(key);
 
-  const rim = new THREE.PointLight(0xe5178f, 5, 42);
+  const rim = new THREE.PointLight(0x5fffe1, 11, 42);
   rim.position.set(-8, 5, -7);
   threeScene.add(rim);
 }
@@ -696,7 +714,7 @@ function addBackdrop() {
   threeScene.add(
     new THREE.Points(
       starGeometry,
-      new THREE.PointsMaterial({ color: 0xe5178f, size: 0.025, transparent: true, opacity: 0.14 })
+      new THREE.PointsMaterial({ color: 0x8db4ff, size: 0.028, transparent: true, opacity: 0.36 })
     )
   );
 }
@@ -707,9 +725,9 @@ function addGround() {
   grass.material.transparent = true;
   root.add(grass);
 
-  const grid = new THREE.GridHelper(20, 20, 0xe5178f, 0xd8d8de);
+  const grid = new THREE.GridHelper(20, 20, 0x23445c, 0x102434);
   grid.position.y = -0.02;
-  grid.material.opacity = 0.16;
+  grid.material.opacity = 0.18;
   grid.material.transparent = true;
   root.add(grid);
 }

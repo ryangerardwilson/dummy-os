@@ -33,7 +33,7 @@ The deep-dive scenes explain confusing terms:
 - Primitives + guards: the Wiom road law plus the gate that blocks a private shortcut.
 - Parameters: the number on a sign, such as speed limit 30 vs 60, where the rule stays the same but behavior changes.
 - State machine: a car wash conveyor where the car moves Queue → Soap → Rinse → Dry → Done.
-- Subsystem tiers: a bounded machine plugged into the road, plus the Tier 1 / Tier 2 / Tier 3 governance ladder used to govern changes/specs.
+- Roadwork tiers: Tier 1 repaints a sign, Tier 2 adds a local detour, and Tier 3 rebuilds the junction with rollback controls.
 
 The text sections then stitch the metaphor back to Satyam's actual OS map:
 
