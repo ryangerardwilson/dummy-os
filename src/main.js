@@ -63,8 +63,8 @@ const scenes = {
   termEvents: {
     number: 'T4',
     title: 'Events and logs',
-    summary: 'An event is a handoff slip. A log is the trip record that proves the handoff happened.',
-    lesson: 'Events let checkpoints talk without taking over each other’s job. Logs make the journey debuggable later.',
+    summary: 'Event = message sent to the next checkpoint. Log = receipt kept by the sender.',
+    lesson: 'An event carries news forward. A log does not move the car; it proves later that the message was sent.',
     camera: [0, 9, 16],
     target: [0, 0, 0]
   },
@@ -554,40 +554,51 @@ function buildEventsTermScene() {
     'EVENT',
     'Event',
     'What is an event?',
-    'An event is a handoff slip passed from one checkpoint to another.',
-    'Example: Coverage says serviceable, then Allocation can use that fact.',
-    'Events let checkpoints talk without stealing each other’s jobs.'
+    'An event is the message packet sent from one checkpoint to the next.',
+    'Example: Coverage sends “serviceable” to Allocation.',
+    'The event carries news forward so the next checkpoint can act.'
   );
   const logInfo = info(
     'LOG',
     'Event log',
     'What is a log?',
-    'A log is the record that the handoff happened.',
-    'It captures the event, owner, time, and useful context.',
-    'Logs are how you debug the trip later.'
+    'A log is the receipt kept after the message is sent.',
+    'It records what was sent, by whom, and when.',
+    'The log proves the handoff happened; it does not drive the car forward.'
   );
 
   addGround();
-  addRoad(14, 4.3, 0);
-  addCheckpoint('Coverage', -4.7, palette.green, eventInfo, 0);
-  addCheckpoint('Allocation', 4.7, palette.green, eventInfo, 1);
+  addRoad(15, 3.2, 0);
+  addCheckpoint('Coverage', -5.3, palette.green, eventInfo, 0);
+  addCheckpoint('Allocation', 5.3, palette.green, eventInfo, 1);
 
-  const envelope = box(1.25, 0.42, 0.88, palette.paper, { x: -4.7, y: 0.58, z: 0 });
+  const envelope = box(1.35, 0.46, 0.92, palette.paper, { x: -5.3, y: 0.62, z: 0 });
   envelope.userData.info = eventInfo;
   interactiveMeshes.push(envelope);
   root.add(envelope);
-  addLabel('event slip', -4.7, 1.15, 0, 'label label--paper');
+  addLabel('message packet', -5.3, 1.2, 0, 'label label--paper');
 
-  const logbook = box(2.3, 0.36, 1.3, palette.violet, { x: 0, y: 0.25, z: 3.15, rotY: 0.1 });
+  const receipt = box(1.9, 0.32, 1.15, palette.violet, { x: -5.3, y: 0.28, z: 3.0, rotY: 0.12 });
+  receipt.userData.info = logInfo;
+  interactiveMeshes.push(receipt);
+  root.add(receipt);
+  addLabel('sender receipt', -5.3, 0.78, 3.0, 'label label--station');
+
+  const logbook = box(2.4, 0.42, 1.35, palette.violet, { x: 0, y: 0.3, z: 3.05, rotY: 0.08 });
   logbook.userData.info = logInfo;
   interactiveMeshes.push(logbook);
   root.add(logbook);
-  addLabel('log', 0, 0.78, 3.15, 'label label--station');
+  addLabel('event log', 0, 0.86, 3.05, 'label label--station');
+
+  const car = createCar(info('CAR', 'Customer car', 'What is happening?', 'The car waits while checkpoints exchange a message.', 'The message moves between checkpoints; the log records the message.', 'Event and log are not the same thing.'), palette.teal);
+  car.position.set(-2.2, 0.45, 0);
+  root.add(car);
 
   animated.push((elapsed) => {
     const phase = loopProgress(elapsed, 0.22);
-    envelope.position.x = THREE.MathUtils.lerp(-4.7, 4.7, phase);
-    envelope.position.y = 0.58 + Math.sin(elapsed * 7) * 0.025;
+    envelope.position.x = THREE.MathUtils.lerp(-5.3, 5.3, phase);
+    envelope.position.y = 0.62 + Math.sin(elapsed * 7) * 0.025;
+    receipt.scale.setScalar(1 + Math.sin(elapsed * 2.8) * 0.025);
   });
 
   selectInfo(eventInfo);
