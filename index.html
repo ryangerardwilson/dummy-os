@@ -150,6 +150,131 @@
             </article>
           </div>
         </section>
+
+        <section class="detail-brief" aria-labelledby="detailBriefTitle">
+          <div class="detail-brief__header">
+            <p class="eyebrow">Deeper guide</p>
+            <h2 id="detailBriefTitle">How to read the OS map when the car is real</h2>
+            <p>
+              Use this when someone asks, “what does this OS document actually
+              decide?” The answer should always come back to the customer car,
+              the checkpoint that owns the next decision, and the rules that
+              stop bad shortcuts.
+            </p>
+          </div>
+
+          <div class="detail-flow" aria-label="Detailed OS reading guide">
+            <article class="detail-row">
+              <div>
+                <span>Step 1</span>
+                <h3>Start with one customer request</h3>
+              </div>
+              <p>
+                Do not begin with tables, services, or diagrams. Begin with one
+                customer request: phone number, location, selected plan, source,
+                current status, and what the customer is trying to get done.
+              </p>
+              <p>
+                The OS map is useful only if it can say where this request is
+                now and what should happen next.
+              </p>
+            </article>
+
+            <article class="detail-row">
+              <div>
+                <span>Step 2</span>
+                <h3>Find the checkpoint that owns the next decision</h3>
+              </div>
+              <p>
+                A checkpoint is an owner. Coverage should decide whether the
+                location can be served. Allocation should decide who serves it.
+                Lifecycle should decide the official journey state.
+              </p>
+              <p>
+                If two teams can make the same decision, the map is weak. If no
+                team clearly owns the decision, the car gets stuck.
+              </p>
+            </article>
+
+            <article class="detail-row">
+              <div>
+                <span>Step 3</span>
+                <h3>Read the primitives as non-negotiable laws</h3>
+              </div>
+              <p>
+                Primitives are the truths the system must protect even when a
+                shortcut looks faster. Example: one customer request should have
+                one official state, one official owner for a decision, and one
+                controlled path forward.
+              </p>
+              <p>
+                If a primitive is violated, the journey may still move, but the
+                business loses trust in the data and the ownership model.
+              </p>
+            </article>
+
+            <article class="detail-row">
+              <div>
+                <span>Step 4</span>
+                <h3>Check the guards that block illegal moves</h3>
+              </div>
+              <p>
+                A guard is the enforcement mechanism. It can be a validation,
+                state check, duplicate check, permissions rule, or hard block in
+                the workflow.
+              </p>
+              <p>
+                The simple test: if someone tries to skip the owner checkpoint,
+                double-assign the customer, or jump to an invalid state, what
+                stops them?
+              </p>
+            </article>
+
+            <article class="detail-row">
+              <div>
+                <span>Step 5</span>
+                <h3>Separate tuneable parameters from hard rules</h3>
+              </div>
+              <p>
+                Parameters are knobs, not new logic. Radius, wait time, retry
+                count, partner cap, and thresholds should be visible settings
+                that can be changed deliberately.
+              </p>
+              <p>
+                This keeps the system flexible without letting people hide
+                business decisions inside random code paths.
+              </p>
+            </article>
+
+            <article class="detail-row">
+              <div>
+                <span>Step 6</span>
+                <h3>Use the state machine to prevent confusion</h3>
+              </div>
+              <p>
+                State says where the car is right now. Transitions say where it
+                is allowed to go next. This matters because teams often disagree
+                when the same customer appears to be in two places at once.
+              </p>
+              <p>
+                A good OS map makes the next allowed move obvious and makes bad
+                jumps impossible or clearly exceptional.
+              </p>
+            </article>
+          </div>
+
+          <div class="question-strip" aria-label="Questions the OS map should answer">
+            <h3>The map should answer these questions</h3>
+            <ul>
+              <li>Where is the customer request right now?</li>
+              <li>Which checkpoint owns the next decision?</li>
+              <li>What truth must not be broken?</li>
+              <li>What guard blocks a bad shortcut?</li>
+              <li>Which parameter can be tuned without changing the rule?</li>
+              <li>What is the next allowed state?</li>
+            </ul>
+          </div>
+        </section>
       </section>
     </main>
     <script type="module" src="/src/main.js"></script>
