@@ -573,8 +573,9 @@ function initMacroScene(container) {
       nodeGroups.forEach((group, index) => {
         group.position.y = Math.sin(elapsed * 1.5 + index) * 0.035;
       });
-      macroRoot.rotation.y = Math.sin(elapsed * 0.12) * 0.05;
-      hubCore.rotation.y = Math.sin(elapsed * 0.7) * 0.08;
+      macroRoot.rotation.y = elapsed * 0.16;
+      macroRoot.rotation.x = Math.sin(elapsed * 0.18) * 0.04;
+      hubCore.rotation.y = elapsed * 0.45;
       macroRenderer.render(macroScene, macroCamera);
       macroLabelRenderer.render(macroScene, macroCamera);
     }
