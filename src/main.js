@@ -47,8 +47,8 @@ const scenes = {
   termParameters: {
     number: 'T2',
     title: 'Parameters',
-    summary: 'A parameter is a knob: change the number, and the same road behaves differently.',
-    lesson: 'The rule is still “check whether the car is close enough.” The parameter is the value of “close enough.” Change 25m to 50m, and the gate allows more cars without rewriting the rule.',
+    summary: 'A parameter is the number on the sign. Same road, same rule, different value.',
+    lesson: 'The rule is “obey the speed limit.” The parameter is the number on the sign. Change 30 to 60, and the car can move faster without rebuilding the road.',
     camera: [0, 8.5, 15],
     target: [0, 0, 0]
   },
@@ -442,67 +442,52 @@ function buildParameterTermScene() {
     'PARAM',
     'Parameter',
     'What is a parameter?',
-    'A parameter is a tunable number inside a rule.',
-    'Example: serviceability radius can be 25m or 50m. The rule is the same; only the number changes.',
-    'Parameters should live in one known registry, not as hidden numbers inside code.'
+    'A parameter is a setting value, like the number on a speed-limit sign.',
+    'The rule is still the same: obey the sign. Only the number changes.',
+    'Keep these numbers in one known place, not hidden inside random code.'
   );
-  const smallRadiusInfo = info(
-    '25m',
-    'Small radius setting',
-    'What does radius = 25m mean?',
-    'The gate only opens for cars very close to the road.',
-    'This is stricter. Fewer cars pass.',
-    'Same serviceability rule, smaller allowed distance.'
+  const slowInfo = info(
+    '30',
+    'Speed limit 30',
+    'What does value = 30 mean?',
+    'The same road has a stricter speed setting.',
+    'The car still follows the same rule, but it moves slower.',
+    'Changing the parameter changes behavior without changing the rule.'
   );
-  const largeRadiusInfo = info(
-    '50m',
-    'Large radius setting',
-    'What does radius = 50m mean?',
-    'The gate opens for cars a little farther from the road.',
-    'This is more permissive. More cars pass.',
-    'Same serviceability rule, larger allowed distance.'
+  const fastInfo = info(
+    '60',
+    'Speed limit 60',
+    'What does value = 60 mean?',
+    'The same road has a looser speed setting.',
+    'The car still follows the same rule, but it can move faster.',
+    'Same road. Same rule. Different parameter value.'
   );
 
   addGround();
-  addRoad(15, 4.3, 0);
+  addRoad(15, 1.8, -1.45);
+  addRoad(15, 1.8, 1.45);
 
-  const smallZone = cylinder(1.05, 0.08, palette.red, { x: -3.8, y: 0.06, z: 0 });
-  smallZone.scale.z = 1.65;
-  smallZone.userData.info = smallRadiusInfo;
-  const largeZone = cylinder(1.95, 0.08, palette.green, { x: 3.8, y: 0.07, z: 0 });
-  largeZone.scale.z = 1.25;
-  largeZone.userData.info = largeRadiusInfo;
-  [smallZone, largeZone].forEach((zone) => {
-    zone.material.transparent = true;
-    zone.material.opacity = 0.34;
-    interactiveMeshes.push(zone);
-    root.add(zone);
-  });
+  addRoadSign('SPEED LIMIT 30', -5.7, -3.35, palette.yellow, slowInfo);
+  addRoadSign('SPEED LIMIT 60', -5.7, 3.35, palette.green, fastInfo);
 
-  addRoadSign('RADIUS = 25m', -3.8, -3.15, palette.red, smallRadiusInfo);
-  addRoadSign('RADIUS = 50m', 3.8, -3.15, palette.green, largeRadiusInfo);
-
-  const knob = cylinder(0.68, 0.38, palette.yellow, { x: 0, y: 0.3, z: 3.15 });
+  const knob = cylinder(0.68, 0.38, palette.yellow, { x: 3.8, y: 0.3, z: 0 });
   knob.userData.info = parameterInfo;
   interactiveMeshes.push(knob);
   root.add(knob);
-  addLabel('same rule, different knob value', 0, 0.95, 3.15, 'label label--station');
+  addLabel('parameter registry', 3.8, 0.95, 0, 'label label--station');
 
-  const nearCar = createCar(info('CAR', 'Nearby car', 'What is happening?', 'This car is close enough for both settings.', 'Small and large radius both allow it.', 'Parameter changes matter at the edge cases.'), palette.teal);
-  nearCar.position.set(-6.5, 0.45, 0);
-  root.add(nearCar);
+  const slowCar = createCar(info('CAR', 'Car under limit 30', 'What is happening?', 'This car is on the strict setting.', 'The rule is the same, but the parameter value makes it move slower.', 'Parameter value affects behavior.'), palette.teal);
+  slowCar.position.set(-6.5, 0.45, -1.45);
+  root.add(slowCar);
 
-  const edgeCar = createCar(info('EDGE', 'Edge-case car', 'Why show a second car?', 'This car is slightly farther away.', 'It fails the 25m setting but passes when the parameter becomes 50m.', 'That is the point of a parameter: tune behavior without changing the rule.'), palette.blue);
-  edgeCar.position.set(-6.5, 0.45, 1.72);
-  root.add(edgeCar);
+  const fastCar = createCar(info('CAR', 'Car under limit 60', 'What is happening?', 'This car is on the looser setting.', 'The rule is the same, but the parameter value lets it move faster.', 'The road was not rebuilt; only the sign value changed.'), palette.blue);
+  fastCar.position.set(-6.5, 0.45, 1.45);
+  root.add(fastCar);
 
   animated.push((elapsed) => {
-    const phase = loopProgress(elapsed, 0.11);
-    nearCar.position.x = THREE.MathUtils.lerp(-6.5, 6.5, phase);
-    edgeCar.position.x = THREE.MathUtils.lerp(-6.5, 6.5, phase);
+    slowCar.position.x = THREE.MathUtils.lerp(-6.5, 6.5, loopProgress(elapsed, 0.08));
+    fastCar.position.x = THREE.MathUtils.lerp(-6.5, 6.5, loopProgress(elapsed, 0.18));
     knob.rotation.y = elapsed * 1.1;
-    smallZone.scale.x = 1.05 + Math.sin(elapsed * 2.2) * 0.03;
-    largeZone.scale.x = 1.95 + Math.sin(elapsed * 2.2) * 0.05;
   });
 
   selectInfo(parameterInfo);
