@@ -24,9 +24,8 @@ The central metaphor:
 The main journey explains the whole OS structure:
 
 - Car story: introduces the car, road, and driving manual.
-- Road rules: shows primitives, guards, and parameters as laws, barriers, and speed limits.
+- Road rules: shows laws, boundaries, and guards as traffic laws, owner lanes, and blocked shortcuts.
 - Checkpoints: shows each OS as a checkpoint that owns one decision.
-- Wrong turn: shows why boundaries exist by blocking a shortcut.
 
 The deep-dive scenes explain confusing terms:
 

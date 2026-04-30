@@ -14,9 +14,9 @@ const scenes = {
   },
   rules: {
     number: '02',
-    title: 'Traffic rules explain primitives and guards',
-    summary: 'Some signs say what must always be true. Some barriers stop what must never happen.',
-    lesson: 'In an OS doc, primitives are like road laws. Guards are like barriers and no-entry signs. They prevent the system from doing stupid things.',
+    title: 'Traffic rules explain laws, boundaries, and guards',
+    summary: 'Road laws say what must stay true. Boundaries say which lane owns the decision. Guards block illegal shortcuts.',
+    lesson: 'In an OS doc, laws define the truth, boundaries assign ownership, and guards stop the car when someone tries to bypass the owner.',
     camera: [0, 9, 16],
     target: [0, 0, 0]
   },
@@ -26,14 +26,6 @@ const scenes = {
     summary: 'Each checkpoint has one job. Coverage checks the area. Allocation picks the driver. Lifecycle tracks the trip.',
     lesson: 'An OS is like a checkpoint with one responsibility. It should make its own decision and then pass the car to the next checkpoint.',
     camera: [0, 10, 17],
-    target: [0, 0, 0]
-  },
-  wrongTurn: {
-    number: '04',
-    title: 'Wrong turns explain boundaries',
-    summary: 'A boundary is just a rule that says: do not take this shortcut; go through the right checkpoint.',
-    lesson: 'If Support starts assigning partners directly, that is like a car jumping the lane divider. It may feel faster, but it breaks the road system.',
-    camera: [0, 9.5, 16],
     target: [0, 0, 0]
   },
   termPrimitives: {
@@ -162,7 +154,6 @@ function setScene(sceneId) {
   if (sceneId === 'car') buildCarScene();
   if (sceneId === 'rules') buildRulesScene();
   if (sceneId === 'checkpoints') buildCheckpointScene();
-  if (sceneId === 'wrongTurn') buildWrongTurnScene();
   if (sceneId === 'termPrimitives') buildPrimitiveGuardTermScene();
   if (sceneId === 'termParameters') buildParameterTermScene();
   if (sceneId === 'termState') buildStateTermScene();
@@ -225,53 +216,67 @@ function buildCarScene() {
 }
 
 function buildRulesScene() {
-  const primitiveInfo = info(
+  const lawInfo = info(
     'LAW',
     'Road law',
-    'What is a primitive?',
-    'A primitive is a rule that should always stay true.',
+    'What is the law?',
+    'The law is the truth that must always stay true.',
     'Example: demand is system-led; partners do not privately own customers.',
-    'In the car story, primitives are the traffic laws everyone must obey.'
+    'In the car story, this is the traffic law every car must obey.'
+  );
+  const boundaryInfo = info(
+    'LANE',
+    'Ownership boundary',
+    'What is a boundary?',
+    'A boundary says which lane or checkpoint owns the decision.',
+    'Example: Allocation chooses the partner; Support should not secretly assign one.',
+    'Boundaries stop teams from taking shortcuts into each other’s jobs.'
   );
   const guardInfo = info(
     'GUARD',
     'No-entry guard',
     'What is a guard?',
-    'A guard stops the car from entering a dangerous or forbidden path.',
+    'A guard is the barrier that blocks the car when it tries to break the law or boundary.',
     'Example: do not assign a customer to two partners at the same time.',
     'Guards are dumb by design: if the move is illegal, block it.'
-  );
-  const parameterInfo = info(
-    'KNOB',
-    'Speed limit',
-    'What is a parameter?',
-    'A parameter is a controlled knob, like a speed limit.',
-    'Example: radius, wait time, cap, threshold, retry count.',
-    'You can tune it, but it should live in a known place, not hidden in code.'
   );
 
   addGround();
   addRoad(15, 4.3, 0);
-  addGuardRail(-2.5, palette.red, guardInfo);
-  addGuardRail(2.5, palette.red, guardInfo);
+  addGuardRail(-2.5, palette.violet, boundaryInfo);
+  addGuardRail(2.5, palette.violet, boundaryInfo);
 
-  const car = createCar(info('CAR', 'Car under rules', 'Why rules?', 'The car can move only if it follows the road rules.', 'The OS document gives those rules names.', 'Without the rules, speed and shortcuts beat correctness.'), palette.teal);
-  car.position.set(-4.8, 0.45, 0);
-  root.add(car);
+  addRoadSign('LAW: always true', -5.6, -3.2, palette.green, lawInfo);
+  addRoadSign('BOUNDARY: owner lane', -0.7, -3.2, palette.violet, boundaryInfo);
+  addRoadSign('GUARD: no shortcut', 4.5, -3.2, palette.red, guardInfo);
 
-  addRoadSign('LAW: always true', -5.6, -3.2, palette.green, primitiveInfo);
-  addRoadSign('SPEED LIMIT: parameter', -0.7, -3.2, palette.yellow, parameterInfo);
-  addRoadSign('NO ENTRY: guard', 4.5, -3.2, palette.red, guardInfo);
+  const shortcutRoad = box(6.4, 0.12, 1.2, palette.red, { x: 2.7, y: 0.09, z: 3.05, rotY: -0.42 });
+  const guardGate = box(0.32, 1.25, 3.1, palette.red, { x: -0.2, y: 0.68, z: 2.05, rotY: -0.42 });
+  [shortcutRoad, guardGate].forEach((part) => {
+    part.userData.info = guardInfo;
+    interactiveMeshes.push(part);
+    root.add(part);
+  });
+  addLabel('blocked shortcut', 2.8, 0.62, 3.8, 'label label--station');
 
-  const blockedRoad = box(3.4, 0.12, 1.4, palette.red, { x: 4.8, y: 0.09, z: 3.15, rotY: -0.35 });
-  blockedRoad.userData.info = guardInfo;
-  interactiveMeshes.push(blockedRoad);
-  root.add(blockedRoad);
+  const goodCar = createCar(info('CAR', 'Lawful customer car', 'What is happening?', 'This car stays on the official road and passes the boundary correctly.', 'The law is respected, the owner lane is clear, and the guard does nothing.', 'Good systems make the correct path boring.'), palette.teal);
+  goodCar.position.set(-5.5, 0.45, 0);
+  root.add(goodCar);
+
+  const shortcutCar = createCar(info('BAD', 'Shortcut attempt', 'What is being blocked?', 'This car tries to jump into a lane where the wrong owner would make the decision.', 'That violates the boundary, so the guard blocks it.', 'This is why laws, boundaries, and guards belong in one picture.'), palette.red);
+  shortcutCar.position.set(-3.2, 0.45, 1.1);
+  shortcutCar.rotation.y = -0.42;
+  root.add(shortcutCar);
+
   animated.push((elapsed) => {
-    car.position.x = THREE.MathUtils.lerp(-4.8, 2.8, loopProgress(elapsed, 0.16));
+    goodCar.position.x = THREE.MathUtils.lerp(-5.5, 4.6, loopProgress(elapsed, 0.14));
+
+    const badPhase = Math.min(loopProgress(elapsed, 0.18) * 1.45, 1);
+    shortcutCar.position.x = THREE.MathUtils.lerp(-3.2, -0.2, badPhase);
+    shortcutCar.position.z = THREE.MathUtils.lerp(1.1, 2.25, badPhase);
   });
 
-  selectInfo(primitiveInfo);
+  selectInfo(boundaryInfo);
 }
 
 function buildCheckpointScene() {
@@ -307,52 +312,6 @@ function buildCheckpointScene() {
   });
 
   selectInfo(allocationInfo);
-}
-
-function buildWrongTurnScene() {
-  const laneInfo = info(
-    'LANE',
-    'Correct lane',
-    'What is the boundary?',
-    'The lane tells the car which checkpoint must make the decision.',
-    'It controls ownership: coverage checks coverage, allocation assigns, support routes support.',
-    'A boundary is understandable when you see the wrong turn being blocked.'
-  );
-  const shortcutInfo = info(
-    'BLOCK',
-    'Blocked shortcut',
-    'What is the bad shortcut?',
-    'A team tries to skip the owner checkpoint and make the decision directly.',
-    'Example: Support directly assigning a partner instead of sending the car to Allocation.',
-    'This may feel faster once, but it breaks trust in the road.'
-  );
-  addGround();
-  addRoad(16, 4.3, 0);
-
-  const sideRoad = box(7.2, 0.12, 1.25, palette.red, { x: 1.6, y: 0.08, z: 3.05, rotY: -0.45 });
-  sideRoad.userData.info = shortcutInfo;
-  interactiveMeshes.push(sideRoad);
-  root.add(sideRoad);
-
-  const barrier = box(0.28, 1.1, 3.4, palette.red, { x: -0.6, y: 0.62, z: 2.0, rotY: -0.45 });
-  barrier.userData.info = shortcutInfo;
-  interactiveMeshes.push(barrier);
-  root.add(barrier);
-
-  addCheckpoint('Allocation owns this', 0, palette.green, laneInfo, 0);
-  addRoadSign('NO SHORTCUT', -0.8, 3.7, palette.red, shortcutInfo);
-
-  const car = createCar(info('CAR', 'Car kept on route', 'What is happening?', 'The car is prevented from taking the wrong turn.', 'It must pass through the checkpoint that owns the decision.', 'That is the point of an OS boundary.'), palette.teal);
-  car.position.set(-5.6, 0.45, 0);
-  root.add(car);
-
-  animated.push((elapsed) => {
-    const phase = loopProgress(elapsed, 0.17);
-    car.position.x = THREE.MathUtils.lerp(-5.6, 2.7, phase);
-    car.position.z = phase > 0.55 ? Math.sin(elapsed * 4) * 0.04 : 0;
-  });
-
-  selectInfo(shortcutInfo);
 }
 
 function buildPrimitiveGuardTermScene() {
