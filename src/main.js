@@ -39,8 +39,8 @@ const scenes = {
   termPrimitives: {
     number: 'T1',
     title: 'Primitives and guards',
-    summary: 'A primitive is a road law. A guard is the barrier that physically prevents breaking that law.',
-    lesson: 'Primitive = always true. Guard = block the illegal move. Put together, they keep the car from doing something that damages the business model.',
+    summary: 'Primitive = the law: stay on the Wiom road. Guard = the gate that blocks a private shortcut.',
+    lesson: 'A primitive describes what must always be true. A guard is the code/check/barrier that refuses a move when the car tries to break that truth.',
     camera: [0, 9, 16],
     target: [0, 0, 0]
   },
@@ -378,36 +378,60 @@ function buildPrimitiveGuardTermScene() {
     'LAW',
     'Primitive',
     'What is a primitive?',
-    'A primitive is a law the road must always obey.',
-    'Example: the system owns demand; no partner privately owns the customer.',
-    'If the car is allowed to break this law, the whole road stops meaning anything.'
+    'A primitive is the road law that must always remain true.',
+    'Example: the customer must stay on the Wiom-owned road; no partner gets a private customer road.',
+    'The primitive tells everyone what the system must protect.'
   );
   const guardInfo = info(
     'GUARD',
     'Guard',
     'What is a guard?',
-    'A guard is the physical blocker that prevents law-breaking movement.',
-    'Example: block double assignment, invalid state jump, or forbidden shortcut.',
-    'A primitive says the rule. A guard enforces the rule.'
+    'A guard is the gate that blocks a car when it tries to break the road law.',
+    'Example: reject private assignment, double assignment, invalid state jump, or forbidden shortcut.',
+    'Primitive says the rule. Guard refuses the illegal move.'
+  );
+  const violationInfo = info(
+    'BAD',
+    'Private shortcut attempt',
+    'What is being blocked?',
+    'The red car is trying to leave the Wiom road and enter a private shortcut.',
+    'That is the kind of move a guard should reject.',
+    'If the guard does not block this, the primitive is just a poster on the wall.'
   );
 
   addGround();
   addRoad(15, 4.3, 0);
-  addRoadSign('LAW', -5.4, -3.15, palette.green, primitiveInfo);
-  addRoadSign('GUARD', 3.8, -3.15, palette.red, guardInfo);
-  addGuardRail(2.55, palette.red, guardInfo);
+  addRoadSign('LAW: stay on Wiom road', -5.6, -3.15, palette.green, primitiveInfo);
 
-  const badPath = box(4.2, 0.12, 1.05, palette.red, { x: 3.6, y: 0.08, z: 3.25, rotY: -0.28 });
-  badPath.userData.info = guardInfo;
-  interactiveMeshes.push(badPath);
-  root.add(badPath);
+  const privateRoad = box(7.6, 0.12, 1.05, palette.red, { x: 1.7, y: 0.08, z: 3.05, rotY: -0.42 });
+  privateRoad.userData.info = violationInfo;
+  interactiveMeshes.push(privateRoad);
+  root.add(privateRoad);
 
-  const car = createCar(info('CAR', 'Car obeying law', 'What is happening?', 'The car continues on the valid road because the guard blocks the bad road.', 'The OS doc describes both the law and the blocker.', 'This is why primitives and guards belong together.'), palette.teal);
-  car.position.set(-6.2, 0.45, 0);
-  root.add(car);
+  const gate = box(0.34, 1.25, 3.1, palette.red, { x: -0.85, y: 0.68, z: 2.05, rotY: -0.42 });
+  gate.userData.info = guardInfo;
+  interactiveMeshes.push(gate);
+  root.add(gate);
+
+  addRoadSign('GUARD blocks shortcut', -1.05, 3.6, palette.red, guardInfo);
+  addRoadSign('PRIVATE ROAD', 3.8, 4.3, palette.red, violationInfo);
+
+  const goodCar = createCar(info('CAR', 'Valid customer car', 'What is happening?', 'This car stays on the official Wiom road.', 'It follows the primitive, so the guard does not need to stop it.', 'The happy path is boring because the law is being followed.'), palette.teal);
+  goodCar.position.set(-6.2, 0.45, 0);
+  root.add(goodCar);
+
+  const badCar = createCar(violationInfo, palette.red);
+  badCar.position.set(-3.1, 0.45, 1.5);
+  badCar.rotation.y = -0.42;
+  root.add(badCar);
 
   animated.push((elapsed) => {
-    car.position.x = THREE.MathUtils.lerp(-6.2, 5.4, loopProgress(elapsed, 0.16));
+    const goodPhase = loopProgress(elapsed, 0.13);
+    goodCar.position.x = THREE.MathUtils.lerp(-6.2, 5.4, goodPhase);
+
+    const badPhase = Math.min(loopProgress(elapsed, 0.2) * 1.35, 1);
+    badCar.position.x = THREE.MathUtils.lerp(-3.1, -1.05, badPhase);
+    badCar.position.z = THREE.MathUtils.lerp(1.5, 2.45, badPhase);
   });
 
   selectInfo(primitiveInfo);

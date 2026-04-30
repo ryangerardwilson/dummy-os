@@ -25,7 +25,7 @@ The main journey explains the whole OS structure:
 
 The deep-dive scenes explain confusing terms:
 
-- Primitives + guards: law plus blocker.
+- Primitives + guards: the Wiom road law plus the gate that blocks a private shortcut.
 - Parameters: tunable road settings like radius, wait time, and retry count.
 - State machine: allowed stops and legal next moves.
 - Events + logs: handoff slips and trip records.
