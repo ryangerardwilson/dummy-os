@@ -27,7 +27,7 @@ The deep-dive scenes explain confusing terms:
 
 - Primitives + guards: the Wiom road law plus the gate that blocks a private shortcut.
 - Parameters: the number on a sign, such as speed limit 30 vs 60, where the rule stays the same but behavior changes.
-- State machine: locked gates where the car can only pass the next legal gate and cannot jump to the end.
+- State machine: a car wash conveyor where the car moves Queue → Soap → Rinse → Dry → Done and cannot skip straight to Done.
 - Events + logs: handoff slips and trip records.
 - Authority boundary: one owner checkpoint, no shortcut ownership theft.
 - Build spec: translation from OS doc to engineering instructions.

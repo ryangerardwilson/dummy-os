@@ -55,8 +55,8 @@ const scenes = {
   termState: {
     number: 'T3',
     title: 'State machine',
-    summary: 'A state machine is a row of locked gates. The car can only pass the next valid gate.',
-    lesson: 'State = which gate the car is currently at. Transition = the next gate that is allowed to open. Jumping to a far gate is blocked.',
+    summary: 'A state machine is like a car wash: Queue → Soap → Rinse → Dry → Done.',
+    lesson: 'State = which bay the car is currently in. Transition = the conveyor moving it to the next allowed bay. The car cannot jump from Queue straight to Done.',
     camera: [0, 9.5, 17],
     target: [0, 0, 0]
   },
@@ -498,65 +498,64 @@ function buildStateTermScene() {
     'STATE',
     'State',
     'What is state?',
-    'State is the gate the car is currently waiting at.',
-    'Examples: requested gate, checked gate, promised gate, assigned gate, active gate.',
-    'If you know the current gate, you know which gate can open next.'
+    'State is the car-wash bay the car is currently inside.',
+    'Examples: Queue, Soap, Rinse, Dry, Done.',
+    'If the car is in Soap, it is not also in Dry. One current state at a time.'
   );
   const transitionInfo = info(
     'NEXT',
     'Transition',
     'What is a transition?',
-    'A transition is the allowed gate opening from the current state to the next state.',
-    'Example: requested can open into checked; checked can open into promised.',
-    'The machine controls the legal order.'
+    'A transition is the conveyor moving the car from one bay to the next allowed bay.',
+    'Example: Soap can move to Rinse. Rinse can move to Dry.',
+    'Transitions are the legal moves.'
   );
   const jumpInfo = info(
     'BLOCK',
-    'Blocked state jump',
-    'What is the bad jump?',
-    'The red ramp tries to skip the middle gates and jump straight to active.',
-    'The state machine blocks this because required gates were skipped.',
-    'This is why state machines exist: no random teleporting.'
+    'Blocked skip',
+    'What is the bad move?',
+    'The red car tries to skip Soap and Rinse and jump straight to Done.',
+    'The car-wash machine blocks it because the required bays were skipped.',
+    'This is why state machines exist: no random skipping.'
   );
 
   addGround();
-  addRoad(18, 4.3, 0);
-  const stops = [
-    ['Requested', -7.2],
-    ['Checked', -3.6],
-    ['Promised', 0],
-    ['Assigned', 3.6],
-    ['Active', 7.2]
+  addRoad(18, 3.3, 0);
+  const bays = [
+    ['Queue', -7.2, palette.blue],
+    ['Soap', -3.6, palette.green],
+    ['Rinse', 0, palette.teal],
+    ['Dry', 3.6, palette.yellow],
+    ['Done', 7.2, palette.violet]
   ];
 
-  stops.forEach(([label, x], index) => {
-    const gateColor = index === 0 ? palette.blue : palette.green;
-    const gateBase = box(1.2, 0.18, 2.2, gateColor, { x, y: 0.13, z: 0 });
-    const gateArm = box(1.65, 0.12, 0.12, gateColor, { x, y: 0.9, z: -0.8, rotZ: -0.28 });
-    gateBase.userData.info = stateInfo;
-    gateArm.userData.info = transitionInfo;
-    interactiveMeshes.push(gateBase, gateArm);
-    root.add(gateBase, gateArm);
+  bays.forEach(([label, x, color], index) => {
+    const bay = box(2.25, 0.18, 2.75, color, { x, y: 0.13, z: 0 });
+    const archLeft = box(0.12, 1.25, 0.12, color, { x: x - 0.95, y: 0.72, z: -1.2 });
+    const archRight = box(0.12, 1.25, 0.12, color, { x: x + 0.95, y: 0.72, z: -1.2 });
+    const archTop = box(2.02, 0.12, 0.12, color, { x, y: 1.32, z: -1.2 });
+    [bay, archLeft, archRight, archTop].forEach((part) => {
+      part.userData.info = stateInfo;
+      interactiveMeshes.push(part);
+      root.add(part);
+    });
     addLabel(label, x, 0.75, 0, 'label label--station');
-    if (index < stops.length - 1) {
-      const segment = line(new THREE.Vector3(x + 0.8, 0.24, 0), new THREE.Vector3(stops[index + 1][1] - 0.8, 0.24, 0), palette.teal, 0.65);
+    if (index < bays.length - 1) {
+      const segment = line(new THREE.Vector3(x + 1.2, 0.26, 0), new THREE.Vector3(bays[index + 1][1] - 1.2, 0.26, 0), palette.teal, 0.72);
       segment.userData.info = transitionInfo;
       root.add(segment);
     }
   });
 
-  const shortcut = box(10.5, 0.1, 0.9, palette.red, { x: 0, y: 0.12, z: 3.1, rotY: -0.08 });
+  const shortcut = box(12.8, 0.1, 0.85, palette.red, { x: 0, y: 0.12, z: 3.15, rotY: -0.08 });
+  const blocker = box(0.34, 1.2, 2.3, palette.red, { x: 1.15, y: 0.64, z: 2.55, rotY: -0.08 });
   shortcut.userData.info = jumpInfo;
-  interactiveMeshes.push(shortcut);
-  root.add(shortcut);
-  addRoadSign('NO JUMP TO ACTIVE', 0, 3.85, palette.red, jumpInfo);
-
-  const blocker = box(0.34, 1.2, 2.2, palette.red, { x: 1.2, y: 0.64, z: 2.35, rotY: -0.08 });
   blocker.userData.info = jumpInfo;
-  interactiveMeshes.push(blocker);
-  root.add(blocker);
+  interactiveMeshes.push(shortcut, blocker);
+  root.add(shortcut, blocker);
+  addRoadSign('NO SKIP TO DONE', 0, 3.95, palette.red, jumpInfo);
 
-  const car = createCar(info('CAR', 'Stateful car', 'What is happening?', 'The car moves through gates in the legal order.', 'Each gate is a state. Each opened gate is a transition.', 'A state machine is just a controlled sequence.'), palette.teal);
+  const car = createCar(info('CAR', 'Car in the wash', 'What is happening?', 'The car moves through the wash bays in the correct order.', 'Each bay is a state. Each conveyor move is a transition.', 'A state machine is just a controlled journey.'), palette.teal);
   car.position.set(-7.2, 0.45, 0);
   root.add(car);
 
@@ -569,7 +568,7 @@ function buildStateTermScene() {
     car.position.x = THREE.MathUtils.lerp(-7.2, 7.2, loopProgress(elapsed, 0.11));
     const badPhase = Math.min(loopProgress(elapsed, 0.18) * 1.25, 1);
     badCar.position.x = THREE.MathUtils.lerp(-6.2, 0.9, badPhase);
-    badCar.position.z = THREE.MathUtils.lerp(2.8, 2.3, badPhase);
+    badCar.position.z = THREE.MathUtils.lerp(2.85, 2.5, badPhase);
   });
 
   selectInfo(stateInfo);
