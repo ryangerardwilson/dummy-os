@@ -32,59 +32,25 @@
             </p>
           </div>
 
-          <aside class="inspector" aria-live="polite">
-            <div class="inspector__topline">
-              <span id="selectedKicker">Story object</span>
-              <span id="selectedCode">CAR</span>
-            </div>
-            <p class="question" id="selectedQuestion">What is the car?</p>
-            <h2 id="selectedName">Customer request car</h2>
-            <p id="selectedSummary">
-              The car is one customer request trying to move through Wiom.
-            </p>
+          <aside class="inspector" aria-label="Micro animation controls">
+            <div class="controls" aria-label="Visual scene controls">
+              <div class="control-group">
+                <p>Overview journey</p>
+                <button class="view-button is-active" data-scene="car">1. Car story</button>
+                <button class="view-button" data-scene="rules">2. Road rules</button>
+                <button class="view-button" data-scene="checkpoints">3. Checkpoints</button>
+              </div>
 
-            <dl class="facts">
-              <div>
-                <dt>For a dummy</dt>
-                <dd id="selectedPlain">Think "customer request on a road", not Linux.</dd>
+              <div class="control-group">
+                <p>Deep dive terms</p>
+                <button class="view-button" data-scene="termPrimitives">Primitives + guards</button>
+                <button class="view-button" data-scene="termParameters">Parameters</button>
+                <button class="view-button" data-scene="termState">State machine</button>
+                <button class="view-button" data-scene="termSubsystem">Roadwork tiers</button>
               </div>
-              <div>
-                <dt>What it controls</dt>
-                <dd id="selectedControls">The route, checkpoints, rules, and official decisions.</dd>
-              </div>
-              <div>
-                <dt>What to remember</dt>
-                <dd id="selectedRemember">The car should not take random shortcuts.</dd>
-              </div>
-            </dl>
-
-            <div class="scene-notes">
-              <p>Scene lesson</p>
-              <strong id="sceneLesson">
-                Do not start with architecture words. Start with this: a car
-                should move safely from start to finish without everyone
-                inventing their own traffic rules.
-              </strong>
             </div>
           </aside>
         </section>
-
-        <footer class="controls" aria-label="Visual scene controls">
-          <div class="control-group">
-            <p>Overview journey</p>
-            <button class="view-button is-active" data-scene="car">1. Car story</button>
-            <button class="view-button" data-scene="rules">2. Road rules</button>
-            <button class="view-button" data-scene="checkpoints">3. Checkpoints</button>
-          </div>
-
-          <div class="control-group">
-            <p>Deep dive terms</p>
-            <button class="view-button" data-scene="termPrimitives">Primitives + guards</button>
-            <button class="view-button" data-scene="termParameters">Parameters</button>
-            <button class="view-button" data-scene="termState">State machine</button>
-            <button class="view-button" data-scene="termSubsystem">Roadwork tiers</button>
-          </div>
-        </footer>
 
         <section class="plain-brief" aria-labelledby="plainBriefTitle">
           <div class="plain-brief__intro">

@@ -208,6 +208,28 @@ h1 {
   box-shadow: 0 24px 80px rgba(17, 17, 17, 0.08);
 }
 
+.inspector .controls {
+  width: 100%;
+  gap: 24px;
+}
+
+.inspector .control-group {
+  display: grid;
+  justify-content: stretch;
+  gap: 10px;
+}
+
+.inspector .control-group p {
+  margin-bottom: 4px;
+  text-align: left;
+}
+
+.inspector .view-button {
+  width: 100%;
+  padding: 14px 16px;
+  text-align: left;
+}
+
 .inspector__topline {
   display: flex;
   justify-content: space-between;

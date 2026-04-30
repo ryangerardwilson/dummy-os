@@ -80,14 +80,6 @@ const stage = document.querySelector('#stage');
 const macroStage = document.querySelector('#macroStage');
 const sceneSummary = document.querySelector('#sceneSummary');
 const sceneLesson = document.querySelector('#sceneLesson');
-const selectedKicker = document.querySelector('#selectedKicker');
-const selectedCode = document.querySelector('#selectedCode');
-const selectedQuestion = document.querySelector('#selectedQuestion');
-const selectedName = document.querySelector('#selectedName');
-const selectedSummary = document.querySelector('#selectedSummary');
-const selectedPlain = document.querySelector('#selectedPlain');
-const selectedControls = document.querySelector('#selectedControls');
-const selectedRemember = document.querySelector('#selectedRemember');
 const sceneButtons = document.querySelectorAll('.view-button');
 
 const threeScene = new THREE.Scene();
@@ -151,7 +143,7 @@ function setScene(sceneId) {
 
   const config = scenes[sceneId];
   sceneSummary.textContent = config.summary;
-  sceneLesson.textContent = config.lesson;
+  if (sceneLesson) sceneLesson.textContent = config.lesson;
 
   if (sceneId === 'car') buildCarScene();
   if (sceneId === 'rules') buildRulesScene();
@@ -1025,15 +1017,6 @@ function addMacroLabel(parent, text, x, y, z, className) {
 }
 
 function selectInfo(infoObject) {
-  selectedKicker.textContent = 'Story object';
-  selectedCode.textContent = infoObject.code;
-  selectedQuestion.textContent = infoObject.question;
-  selectedName.textContent = infoObject.name;
-  selectedSummary.textContent = infoObject.summary;
-  selectedPlain.textContent = infoObject.plain;
-  selectedControls.textContent = infoObject.controls;
-  selectedRemember.textContent = infoObject.remember;
-
   interactiveMeshes.forEach((mesh) => {
     const isSelected = mesh.userData.info === infoObject;
     mesh.scale.setScalar(isSelected ? 1.08 : 1);
