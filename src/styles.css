@@ -115,6 +115,7 @@ h1 {
   font-size: var(--heading-panel-size);
   line-height: 0.98;
   letter-spacing: var(--heading-sub-tracking);
+  text-align: left;
 }
 
 .order-item h3,
@@ -722,6 +723,7 @@ h1 {
 
 .authority-card h3 {
   margin: 0 0 14px;
+  text-align: left;
 }
 
 .authority-card p {
