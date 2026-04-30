@@ -63,8 +63,8 @@ const scenes = {
   termEvents: {
     number: 'T4',
     title: 'Events and logs',
-    summary: 'Event = message sent to the next checkpoint. Log = receipt kept by the sender.',
-    lesson: 'An event carries news forward. A log does not move the car; it proves later that the message was sent.',
+    summary: 'Event = notification sent forward. Log = saved proof kept behind.',
+    lesson: 'When the car passes a checkpoint camera, the next checkpoint gets a notification. The camera also saves proof. Notification is the event; saved proof is the log.',
     camera: [0, 9, 16],
     target: [0, 0, 0]
   },
@@ -554,54 +554,82 @@ function buildEventsTermScene() {
     'EVENT',
     'Event',
     'What is an event?',
-    'An event is the message packet sent from one checkpoint to the next.',
-    'Example: Coverage sends “serviceable” to Allocation.',
-    'The event carries news forward so the next checkpoint can act.'
+    'An event is a notification sent when something happens.',
+    'Example: the Coverage camera sees the car and tells Allocation.',
+    'The event moves news forward so the next checkpoint can act.'
   );
   const logInfo = info(
     'LOG',
     'Event log',
     'What is a log?',
-    'A log is the receipt kept after the message is sent.',
-    'It records what was sent, by whom, and when.',
-    'The log proves the handoff happened; it does not drive the car forward.'
+    'A log is the saved proof that the thing happened.',
+    'Example: the camera saves a photo/time record when the car passes.',
+    'The log stays behind for debugging; it is not the notification sent forward.'
+  );
+  const cameraInfo = info(
+    'CAM',
+    'Checkpoint camera',
+    'What triggers the event?',
+    'The camera notices the car passing Coverage.',
+    'It does two things: sends a notification ahead and saves proof behind.',
+    'Something happened -> event sent -> log saved.'
   );
 
   addGround();
-  addRoad(15, 3.2, 0);
-  addCheckpoint('Coverage', -5.3, palette.green, eventInfo, 0);
-  addCheckpoint('Allocation', 5.3, palette.green, eventInfo, 1);
+  addRoad(16, 3.6, 0);
+  addCheckpoint('Coverage camera', -4.8, palette.green, cameraInfo, 0);
+  addCheckpoint('Allocation receives', 4.8, palette.green, eventInfo, 1);
 
-  const envelope = box(1.35, 0.46, 0.92, palette.paper, { x: -5.3, y: 0.62, z: 0 });
-  envelope.userData.info = eventInfo;
-  interactiveMeshes.push(envelope);
-  root.add(envelope);
-  addLabel('message packet', -5.3, 1.2, 0, 'label label--paper');
+  const cameraPole = cylinder(0.07, 1.6, '#d7edf3', { x: -4.8, y: 0.8, z: 2.35 });
+  const cameraBody = box(0.95, 0.48, 0.62, palette.blue, { x: -4.8, y: 1.55, z: 2.0 });
+  const cameraLens = cylinder(0.18, 0.18, palette.white, { x: -4.8, y: 1.55, z: 1.62, rotX: Math.PI / 2 });
+  [cameraPole, cameraBody, cameraLens].forEach((part) => {
+    part.userData.info = cameraInfo;
+    interactiveMeshes.push(part);
+    root.add(part);
+  });
+  addLabel('camera sees car', -4.8, 2.05, 2.0, 'label label--station');
 
-  const receipt = box(1.9, 0.32, 1.15, palette.violet, { x: -5.3, y: 0.28, z: 3.0, rotY: 0.12 });
-  receipt.userData.info = logInfo;
-  interactiveMeshes.push(receipt);
-  root.add(receipt);
-  addLabel('sender receipt', -5.3, 0.78, 3.0, 'label label--station');
+  const notification = box(1.95, 0.42, 0.92, palette.yellow, { x: -4.8, y: 1.05, z: 0 });
+  notification.userData.info = eventInfo;
+  interactiveMeshes.push(notification);
+  root.add(notification);
+  const notificationLabel = makeLabel('notification', 'label label--paper');
+  notificationLabel.position.set(0, 0.68, 0);
+  notification.add(notificationLabel);
 
-  const logbook = box(2.4, 0.42, 1.35, palette.violet, { x: 0, y: 0.3, z: 3.05, rotY: 0.08 });
-  logbook.userData.info = logInfo;
-  interactiveMeshes.push(logbook);
-  root.add(logbook);
-  addLabel('event log', 0, 0.86, 3.05, 'label label--station');
+  const savedPhoto = box(2.15, 0.3, 1.25, palette.violet, { x: -4.8, y: 0.28, z: 3.55, rotY: 0.08 });
+  const photoFlash = box(1.45, 0.04, 0.72, palette.white, { x: -4.8, y: 0.47, z: 3.55, rotY: 0.08, opacity: 0.76 });
+  [savedPhoto, photoFlash].forEach((part) => {
+    part.userData.info = logInfo;
+    interactiveMeshes.push(part);
+    root.add(part);
+  });
+  addLabel('saved proof', -4.8, 0.9, 3.55, 'label label--station');
 
-  const car = createCar(info('CAR', 'Customer car', 'What is happening?', 'The car waits while checkpoints exchange a message.', 'The message moves between checkpoints; the log records the message.', 'Event and log are not the same thing.'), palette.teal);
-  car.position.set(-2.2, 0.45, 0);
+  const car = createCar(info('CAR', 'Customer car', 'What is happening?', 'The car passes the Coverage camera.', 'The camera sends a notification forward and saves proof behind.', 'Event and log are two different outputs from the same moment.'), palette.teal);
+  car.position.set(-7.2, 0.45, 0);
   root.add(car);
 
   animated.push((elapsed) => {
-    const phase = loopProgress(elapsed, 0.22);
-    envelope.position.x = THREE.MathUtils.lerp(-5.3, 5.3, phase);
-    envelope.position.y = 0.62 + Math.sin(elapsed * 7) * 0.025;
-    receipt.scale.setScalar(1 + Math.sin(elapsed * 2.8) * 0.025);
+    const phase = loopProgress(elapsed, 0.1);
+    const triggerStart = 0.17;
+    const triggerEnd = 0.82;
+    const eventPhase = THREE.MathUtils.clamp((phase - triggerStart) / (triggerEnd - triggerStart), 0, 1);
+    const isTriggered = phase >= triggerStart && phase <= triggerEnd;
+
+    car.position.x = THREE.MathUtils.lerp(-7.2, 7.2, phase);
+    notification.visible = isTriggered;
+    notification.position.x = THREE.MathUtils.lerp(-4.8, 4.8, eventPhase);
+    notification.position.y = 1.05 + Math.sin(elapsed * 7) * 0.025;
+
+    const proofPulse = phase >= triggerStart && phase < 0.32 ? 1.14 : 1;
+    savedPhoto.scale.setScalar(proofPulse);
+    photoFlash.scale.setScalar(proofPulse);
+    photoFlash.material.opacity = phase >= triggerStart && phase < 0.32 ? 0.9 : 0.45;
   });
 
-  selectInfo(eventInfo);
+  selectInfo(cameraInfo);
 }
 
 function buildAuthorityTermScene() {
@@ -885,12 +913,17 @@ function loopProgress(elapsed, speed) {
 }
 
 function addLabel(text, x, y, z, className) {
+  const labelObject = makeLabel(text, className);
+  labelObject.position.set(x, y, z);
+  root.add(labelObject);
+  return labelObject;
+}
+
+function makeLabel(text, className) {
   const label = document.createElement('div');
   label.className = className;
   label.textContent = text;
   const labelObject = new CSS2DObject(label);
-  labelObject.position.set(x, y, z);
-  root.add(labelObject);
   return labelObject;
 }
 
