@@ -55,8 +55,8 @@ const scenes = {
   termState: {
     number: 'T3',
     title: 'State machine',
-    summary: 'A state machine is the allowed order of road stops. The car cannot jump from start to finish randomly.',
-    lesson: 'State tells you where the car is right now. Transitions tell you which next stops are legal.',
+    summary: 'A state machine is a row of locked gates. The car can only pass the next valid gate.',
+    lesson: 'State = which gate the car is currently at. Transition = the next gate that is allowed to open. Jumping to a far gate is blocked.',
     camera: [0, 9.5, 17],
     target: [0, 0, 0]
   },
@@ -498,17 +498,25 @@ function buildStateTermScene() {
     'STATE',
     'State',
     'What is state?',
-    'State is the car’s current stop on the road.',
-    'Examples: requested, checked, promised, assigned, active.',
-    'If you know the state, you know what can legally happen next.'
+    'State is the gate the car is currently waiting at.',
+    'Examples: requested gate, checked gate, promised gate, assigned gate, active gate.',
+    'If you know the current gate, you know which gate can open next.'
   );
   const transitionInfo = info(
     'NEXT',
     'Transition',
     'What is a transition?',
-    'A transition is an allowed move from one stop to the next.',
-    'Example: requested can move to checked; checked can move to promised.',
-    'A state machine prevents random jumps.'
+    'A transition is the allowed gate opening from the current state to the next state.',
+    'Example: requested can open into checked; checked can open into promised.',
+    'The machine controls the legal order.'
+  );
+  const jumpInfo = info(
+    'BLOCK',
+    'Blocked state jump',
+    'What is the bad jump?',
+    'The red ramp tries to skip the middle gates and jump straight to active.',
+    'The state machine blocks this because required gates were skipped.',
+    'This is why state machines exist: no random teleporting.'
   );
 
   addGround();
@@ -522,10 +530,13 @@ function buildStateTermScene() {
   ];
 
   stops.forEach(([label, x], index) => {
-    const stop = cylinder(0.68, 0.28, index === 0 ? palette.blue : palette.green, { x, y: 0.18, z: 0 });
-    stop.userData.info = stateInfo;
-    interactiveMeshes.push(stop);
-    root.add(stop);
+    const gateColor = index === 0 ? palette.blue : palette.green;
+    const gateBase = box(1.2, 0.18, 2.2, gateColor, { x, y: 0.13, z: 0 });
+    const gateArm = box(1.65, 0.12, 0.12, gateColor, { x, y: 0.9, z: -0.8, rotZ: -0.28 });
+    gateBase.userData.info = stateInfo;
+    gateArm.userData.info = transitionInfo;
+    interactiveMeshes.push(gateBase, gateArm);
+    root.add(gateBase, gateArm);
     addLabel(label, x, 0.75, 0, 'label label--station');
     if (index < stops.length - 1) {
       const segment = line(new THREE.Vector3(x + 0.8, 0.24, 0), new THREE.Vector3(stops[index + 1][1] - 0.8, 0.24, 0), palette.teal, 0.65);
@@ -534,17 +545,31 @@ function buildStateTermScene() {
     }
   });
 
-  const shortcut = box(5.8, 0.1, 0.8, palette.red, { x: 0, y: 0.12, z: 3.1, rotY: -0.12 });
-  shortcut.userData.info = transitionInfo;
+  const shortcut = box(10.5, 0.1, 0.9, palette.red, { x: 0, y: 0.12, z: 3.1, rotY: -0.08 });
+  shortcut.userData.info = jumpInfo;
   interactiveMeshes.push(shortcut);
   root.add(shortcut);
-  addRoadSign('NO JUMP', 0, 3.75, palette.red, transitionInfo);
+  addRoadSign('NO JUMP TO ACTIVE', 0, 3.85, palette.red, jumpInfo);
 
-  const car = createCar(info('CAR', 'Stateful car', 'What is happening?', 'The car moves from stop to stop in a legal order.', 'Each stop is a state. Each road segment is a transition.', 'State machines are just legal journey maps.'), palette.teal);
+  const blocker = box(0.34, 1.2, 2.2, palette.red, { x: 1.2, y: 0.64, z: 2.35, rotY: -0.08 });
+  blocker.userData.info = jumpInfo;
+  interactiveMeshes.push(blocker);
+  root.add(blocker);
+
+  const car = createCar(info('CAR', 'Stateful car', 'What is happening?', 'The car moves through gates in the legal order.', 'Each gate is a state. Each opened gate is a transition.', 'A state machine is just a controlled sequence.'), palette.teal);
   car.position.set(-7.2, 0.45, 0);
   root.add(car);
+
+  const badCar = createCar(jumpInfo, palette.red);
+  badCar.position.set(-6.2, 0.45, 2.8);
+  badCar.rotation.y = -0.08;
+  root.add(badCar);
+
   animated.push((elapsed) => {
     car.position.x = THREE.MathUtils.lerp(-7.2, 7.2, loopProgress(elapsed, 0.11));
+    const badPhase = Math.min(loopProgress(elapsed, 0.18) * 1.25, 1);
+    badCar.position.x = THREE.MathUtils.lerp(-6.2, 0.9, badPhase);
+    badCar.position.z = THREE.MathUtils.lerp(2.8, 2.3, badPhase);
   });
 
   selectInfo(stateInfo);
