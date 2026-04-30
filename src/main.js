@@ -56,7 +56,7 @@ const scenes = {
     number: 'T3',
     title: 'State machine',
     summary: 'A state machine is like a car wash: Queue → Soap → Rinse → Dry → Done.',
-    lesson: 'State = which bay the car is currently in. Transition = the conveyor moving it to the next allowed bay. The car cannot jump from Queue straight to Done.',
+    lesson: 'State = which bay the car is currently in. Transition = the conveyor moving it to the next allowed bay.',
     camera: [0, 9.5, 17],
     target: [0, 0, 0]
   },
@@ -510,15 +510,6 @@ function buildStateTermScene() {
     'Example: Soap can move to Rinse. Rinse can move to Dry.',
     'Transitions are the legal moves.'
   );
-  const jumpInfo = info(
-    'BLOCK',
-    'Blocked skip',
-    'What is the bad move?',
-    'The red car tries to skip Soap and Rinse and jump straight to Done.',
-    'The car-wash machine blocks it because the required bays were skipped.',
-    'This is why state machines exist: no random skipping.'
-  );
-
   addGround();
   addRoad(18, 3.3, 0);
   const bays = [
@@ -547,28 +538,12 @@ function buildStateTermScene() {
     }
   });
 
-  const shortcut = box(12.8, 0.1, 0.85, palette.red, { x: 0, y: 0.12, z: 3.15, rotY: -0.08 });
-  const blocker = box(0.34, 1.2, 2.3, palette.red, { x: 1.15, y: 0.64, z: 2.55, rotY: -0.08 });
-  shortcut.userData.info = jumpInfo;
-  blocker.userData.info = jumpInfo;
-  interactiveMeshes.push(shortcut, blocker);
-  root.add(shortcut, blocker);
-  addRoadSign('NO SKIP TO DONE', 0, 3.95, palette.red, jumpInfo);
-
   const car = createCar(info('CAR', 'Car in the wash', 'What is happening?', 'The car moves through the wash bays in the correct order.', 'Each bay is a state. Each conveyor move is a transition.', 'A state machine is just a controlled journey.'), palette.teal);
   car.position.set(-7.2, 0.45, 0);
   root.add(car);
 
-  const badCar = createCar(jumpInfo, palette.red);
-  badCar.position.set(-6.2, 0.45, 2.8);
-  badCar.rotation.y = -0.08;
-  root.add(badCar);
-
   animated.push((elapsed) => {
     car.position.x = THREE.MathUtils.lerp(-7.2, 7.2, loopProgress(elapsed, 0.11));
-    const badPhase = Math.min(loopProgress(elapsed, 0.18) * 1.25, 1);
-    badCar.position.x = THREE.MathUtils.lerp(-6.2, 0.9, badPhase);
-    badCar.position.z = THREE.MathUtils.lerp(2.85, 2.5, badPhase);
   });
 
   selectInfo(stateInfo);
