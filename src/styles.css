@@ -680,6 +680,7 @@ h1 {
 
 .order-item h3 {
   margin: 18px 0 14px;
+  text-align: left;
 }
 
 .order-item p {
