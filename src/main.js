@@ -59,6 +59,14 @@ const scenes = {
     lesson: 'State = which bay the car is currently in. Transition = the conveyor moving it to the next allowed bay.',
     camera: [0, 9.5, 17],
     target: [0, 0, 0]
+  },
+  termSubsystem: {
+    number: 'T4',
+    title: 'Subsystem and Tier 3',
+    summary: 'A subsystem is a specialist machine attached to the road. Tier 3 means strict governance because mistakes can affect trust, money, or the core journey.',
+    lesson: 'Do not call every important thing an OS. Ask whether it owns durable truth, or whether it is a bounded machine feeding an OS. Tier 3 is the control level.',
+    camera: [0, 10, 18],
+    target: [0, 0, 0]
   }
 };
 
@@ -158,6 +166,7 @@ function setScene(sceneId) {
   if (sceneId === 'termPrimitives') buildPrimitiveGuardTermScene();
   if (sceneId === 'termParameters') buildParameterTermScene();
   if (sceneId === 'termState') buildStateTermScene();
+  if (sceneId === 'termSubsystem') buildSubsystemTermScene();
 
   camera.position.set(...config.camera);
   controls.target.set(...config.target);
@@ -520,6 +529,96 @@ function buildStateTermScene() {
   });
 
   selectInfo(stateInfo);
+}
+
+function buildSubsystemTermScene() {
+  const osInfo = info(
+    'OS',
+    'OS authority checkpoint',
+    'What is an OS?',
+    'An OS is the official checkpoint that owns one durable business truth.',
+    'Example: CL owns connection state, D&A owns who serves, Asset Custody owns device custody.',
+    'If it owns the truth and lifecycle, call it an OS.'
+  );
+  const subsystemInfo = info(
+    'SUB',
+    'Subsystem machine',
+    'What is a subsystem?',
+    'A subsystem is a specialist machine inside Wiom that does one bounded job.',
+    'It can read signals from OSes and emit a decision, but it does not own the whole road or lifecycle.',
+    'Commitment Decision Spec is this kind of bounded machine, not a full OS.'
+  );
+  const tierInfo = info(
+    'T3',
+    'Tier 3 control lane',
+    'What is Tier 3?',
+    'Tier 3 is the strictest governance lane for high-blast-radius changes.',
+    'It requires boundaries, contracts, observability, recovery rules, and a kill plan.',
+    'Tier 3 means high-control governance, not third-class importance.'
+  );
+  const signalInfo = info(
+    'IN/OUT',
+    'Signals in, decision out',
+    'How does a subsystem connect?',
+    'It reads declared signals, makes one governed decision, and passes that decision onward.',
+    'Hidden inputs and side effects are not allowed because they make the road untrustworthy.',
+    'A subsystem plugs into the OS map through contracts.'
+  );
+
+  addGround();
+  addRoad(18, 4.3, 0);
+
+  addCheckpoint('OS owns truth', 5.8, palette.green, osInfo, 0);
+  addRoadSign('CL / D&A / ACS', 6.2, -3.35, palette.green, osInfo);
+
+  const machineBase = box(3.5, 0.24, 3.05, palette.paper, { x: -1.4, y: 0.18, z: 0 });
+  const machineGateLeft = box(0.18, 1.7, 0.18, palette.teal, { x: -2.9, y: 0.92, z: -1.28 });
+  const machineGateRight = box(0.18, 1.7, 0.18, palette.teal, { x: 0.1, y: 0.92, z: -1.28 });
+  const machineGateTop = box(3.18, 0.18, 0.18, palette.teal, { x: -1.4, y: 1.72, z: -1.28 });
+  [machineBase, machineGateLeft, machineGateRight, machineGateTop].forEach((part) => {
+    part.userData.info = subsystemInfo;
+    interactiveMeshes.push(part);
+    root.add(part);
+  });
+  addLabel('bounded subsystem machine', -1.4, 1.98, -1.28, 'label label--station');
+
+  const tierTower = box(1.2, 2.2, 1.2, palette.teal, { x: -6.2, y: 1.1, z: 3.25 });
+  const killSwitch = box(0.82, 0.3, 0.82, palette.red, { x: -6.2, y: 2.38, z: 3.25 });
+  [tierTower, killSwitch].forEach((part) => {
+    part.userData.info = tierInfo;
+    interactiveMeshes.push(part);
+    root.add(part);
+  });
+  addLabel('tier 3 controls', -6.2, 2.86, 3.25, 'label label--station');
+  addRoadSign('kill plan', -4.7, 3.35, palette.red, tierInfo);
+
+  const signalTowers = [
+    ['OS signal', -5.5, -3.25],
+    ['parameter', -3.6, -3.25],
+    ['audit trail', -1.7, -3.25]
+  ];
+  signalTowers.forEach(([label, x, z]) => {
+    const tower = box(0.72, 0.9, 0.72, palette.blue, { x, y: 0.48, z });
+    tower.userData.info = signalInfo;
+    interactiveMeshes.push(tower);
+    root.add(tower);
+    addLabel(label, x, 1.12, z, 'label label--station');
+    const connector = line(new THREE.Vector3(x, 0.25, z + 0.45), new THREE.Vector3(-1.4, 0.25, -1.45), palette.teal, 0.55);
+    root.add(connector);
+  });
+  addRoadSign('decision out', 1.6, -3.25, palette.teal, signalInfo);
+
+  const car = createCar(info('CAR', 'Customer car through subsystem', 'What is happening?', 'The car passes through a bounded machine before the OS checkpoint.', 'The machine can help decide, but the OS checkpoint still owns its official truth.', 'Subsystems should make the road safer, not become secret roads.'), palette.teal);
+  car.position.set(-8.0, 0.45, 0);
+  root.add(car);
+
+  animated.push((elapsed) => {
+    const phase = loopProgress(elapsed, 0.1);
+    car.position.x = THREE.MathUtils.lerp(-8.0, 7.5, phase);
+    car.position.y = 0.45 + Math.sin(elapsed * 5) * 0.02;
+  });
+
+  selectInfo(subsystemInfo);
 }
 
 function checkpointInfo(code, name, question, plain) {
