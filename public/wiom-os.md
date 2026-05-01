@@ -107,7 +107,31 @@ Reading order:
 5. Tier ladder for specs: Once a spec changes, L1, L2, or L3 tells you how risky that change is. L1 is low-risk polish. L2 is a local behavior change. L3 is system-level risk: new states, rules, money, routing, trust, or failure modes.
 6. Services, signals, parameters: The implementation pieces: code that runs, events that move between authorities, and tunable values like thresholds, caps, and time windows.
 
-## 5. The real OS authorities people are confused by
+## 5. Dissecting an OS like a cockroach
+
+An OS is not any big feature. An OS is the official owner of one durable business truth. If it only calculates, routes, displays, stores, or implements something, it is probably not an OS.
+
+Simple test:
+
+- Does it own truth and lifecycle? If yes, it may be an OS. If no, it is more likely a spec, service, parameter, contract, renderer, or subsystem.
+- OS = official truth owner + legal states + allowed moves + clear handoffs.
+
+Essential attributes of a Wiom OS:
+
+- Owned truth: The one fact this OS is responsible for. Example: connection state, device custody, payout entitlement.
+- Object: The thing being governed: customer connection, CSP, NetBox, complaint, wallet, or access entitlement.
+- States: The official buckets the object can be in. One current state at a time, with names other OSes can reference.
+- Transitions: The legal moves between states. The OS must say what can move, when, and why.
+- Guards: The blockers that stop illegal moves. If a move breaks the rule, the guard blocks it.
+- Levers: The authorized actions the OS can take. If the lever is not listed, the OS cannot improvise it.
+- Inputs: The signals this OS is allowed to read from other OSes. Hidden dependencies are not allowed.
+- Outputs: The events or truth this OS sends downstream when something changes.
+- Invariants: The never-break rules. Example: one NetBox cannot be officially held by two CSPs at once.
+- Non-goals: The boundaries: what this OS explicitly does not own, so it does not become a secret mega-OS.
+- Parameters: The tunable numbers: thresholds, caps, retry limits, windows, and timeouts.
+- Audit trail: The evidence needed to explain why a state changed or why a decision happened.
+
+## 6. The real OS authorities people are confused by
 
 "Checkpoint" is only our car-story translation. Satyam's real structure is a set of Operating Systems: each one owns exactly one kind of truth, and the customer journey moves by passing signals between them.
 
@@ -138,7 +162,7 @@ If someone is confused, ask which OS owns the truth:
 - Who moves the money? Payment OS.
 - What should the customer app show? CAEO OS.
 
-## 6. Non-OS Components
+## 7. Non-OS Components
 
 These are still important, but they do not own lifecycle truth. They support OS authorities, implement them, or define controlled decisions and handoffs.
 

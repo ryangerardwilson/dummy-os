@@ -797,6 +797,115 @@ h1 {
   line-height: 1.48;
 }
 
+.anatomy-brief {
+  display: grid;
+  gap: clamp(16px, 2.4vw, 26px);
+  margin-top: 0;
+  padding: clamp(15px, 2.4vw, 26px);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(229, 23, 143, 0.12), transparent 28rem),
+    linear-gradient(135deg, rgba(17, 17, 17, 0.05), transparent 50%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.56));
+}
+
+.anatomy-brief__header {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.anatomy-brief__header h2 {
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: var(--heading-section-size);
+  line-height: 0.92;
+  letter-spacing: var(--heading-section-tracking);
+}
+
+.anatomy-brief__header > p:not(.eyebrow) {
+  max-width: 620px;
+  margin: 0 auto;
+  color: #4f4f55;
+  font-size: clamp(0.86rem, 1vw, 0.96rem);
+  text-align: center;
+  line-height: 1.55;
+}
+
+.anatomy-layout {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.34fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+.anatomy-specimen {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100%;
+  padding: 16px;
+  border: 1px solid rgba(17, 17, 17, 0.14);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(229, 23, 143, 0.12), transparent 16rem),
+    rgba(255, 255, 255, 0.78);
+}
+
+.anatomy-specimen span,
+.anatomy-grid span {
+  color: var(--accent);
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.anatomy-specimen h3,
+.anatomy-grid h3 {
+  margin: 10px 0 8px;
+  font-size: var(--heading-card-size);
+  line-height: 0.98;
+  letter-spacing: var(--heading-sub-tracking);
+  text-align: left;
+}
+
+.anatomy-specimen p,
+.anatomy-grid p {
+  margin: 0;
+  color: #3d3d43;
+  font-size: 0.85rem;
+  line-height: 1.46;
+}
+
+.anatomy-specimen strong {
+  display: block;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+  font-size: clamp(0.96rem, 1.2vw, 1.1rem);
+  line-height: 1.36;
+}
+
+.anatomy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.anatomy-grid article {
+  min-height: 122px;
+  padding: 12px;
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.68);
+}
+
 .detail-brief__header {
   display: grid;
   grid-template-columns: 1fr;
@@ -955,12 +1064,18 @@ h1 {
   .macro-brief__header,
   .macro-layout,
   .order-brief__header,
+  .anatomy-brief__header,
+  .anatomy-layout,
   .detail-brief__header,
   .question-strip {
     grid-template-columns: 1fr;
   }
 
   .authority-map {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .anatomy-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1039,6 +1154,10 @@ h1 {
   }
 
   .authority-map {
+    grid-template-columns: 1fr;
+  }
+
+  .anatomy-grid {
     grid-template-columns: 1fr;
   }
 

@@ -21,14 +21,15 @@ The central metaphor:
 
 ## Scenes
 
-The page is organized into six sections:
+The page is organized into seven sections:
 
 - 1. Wiom OS Basic Concepts: explains one customer request as a car moving through the road.
 - 2. If you only need to remember 3 things ...: stitches the car metaphor back to the OS document structure.
 - 3. The Wiom OS Universe: animates the wider Wiom system of demand, supply, assets, money, quality, support, and access.
 - 4. Read the map from authority to artifact: explains the taxonomy order.
-- 5. The real OS authorities people are confused by: maps the actual OS authorities.
-- 6. Non-OS Components: explains important artifacts and implementations that are not OS authorities.
+- 5. Dissecting an OS like a cockroach: explains the essential attributes of an OS.
+- 6. The real OS authorities people are confused by: maps the actual OS authorities.
+- 7. Non-OS Components: explains important artifacts and implementations that are not OS authorities.
 
 The public `public/wiom-os.md` file is the AI-ingestible version of the
 website. Keep it aligned with visible copy whenever the website content changes.

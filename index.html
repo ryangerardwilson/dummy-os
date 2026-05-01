@@ -213,10 +213,100 @@
 
         </section>
 
+        <section class="anatomy-brief" aria-labelledby="anatomyBriefTitle">
+          <div class="anatomy-brief__header">
+            <p class="eyebrow">OS anatomy</p>
+            <h2 id="anatomyBriefTitle">5. Dissecting an OS like a cockroach</h2>
+            <p>
+              An OS is not any big feature. An OS is the official owner of one
+              durable business truth. If it only calculates, routes, displays,
+              stores, or implements something, it is probably not an OS.
+            </p>
+          </div>
+
+          <div class="anatomy-layout" aria-label="Essential attributes of a Wiom OS">
+            <article class="anatomy-specimen">
+              <span>Simple test</span>
+              <h3>Does it own truth and lifecycle?</h3>
+              <p>
+                If yes, it may be an OS. If no, it is more likely a spec,
+                service, parameter, contract, renderer, or subsystem.
+              </p>
+              <strong>
+                OS = official truth owner + legal states + allowed moves + clear
+                handoffs.
+              </strong>
+            </article>
+
+            <div class="anatomy-grid">
+              <article>
+                <span>01</span>
+                <h3>Owned truth</h3>
+                <p>The one fact this OS is responsible for. Example: connection state, device custody, payout entitlement.</p>
+              </article>
+              <article>
+                <span>02</span>
+                <h3>Object</h3>
+                <p>The thing being governed: customer connection, CSP, NetBox, complaint, wallet, or access entitlement.</p>
+              </article>
+              <article>
+                <span>03</span>
+                <h3>States</h3>
+                <p>The official buckets the object can be in. One current state at a time, with names other OSes can reference.</p>
+              </article>
+              <article>
+                <span>04</span>
+                <h3>Transitions</h3>
+                <p>The legal moves between states. The OS must say what can move, when, and why.</p>
+              </article>
+              <article>
+                <span>05</span>
+                <h3>Guards</h3>
+                <p>The blockers that stop illegal moves. If a move breaks the rule, the guard blocks it.</p>
+              </article>
+              <article>
+                <span>06</span>
+                <h3>Levers</h3>
+                <p>The authorized actions the OS can take. If the lever is not listed, the OS cannot improvise it.</p>
+              </article>
+              <article>
+                <span>07</span>
+                <h3>Inputs</h3>
+                <p>The signals this OS is allowed to read from other OSes. Hidden dependencies are not allowed.</p>
+              </article>
+              <article>
+                <span>08</span>
+                <h3>Outputs</h3>
+                <p>The events or truth this OS sends downstream when something changes.</p>
+              </article>
+              <article>
+                <span>09</span>
+                <h3>Invariants</h3>
+                <p>The never-break rules. Example: one NetBox cannot be officially held by two CSPs at once.</p>
+              </article>
+              <article>
+                <span>10</span>
+                <h3>Non-goals</h3>
+                <p>The boundaries: what this OS explicitly does not own, so it does not become a secret mega-OS.</p>
+              </article>
+              <article>
+                <span>11</span>
+                <h3>Parameters</h3>
+                <p>The tunable numbers: thresholds, caps, retry limits, windows, and timeouts.</p>
+              </article>
+              <article>
+                <span>12</span>
+                <h3>Audit trail</h3>
+                <p>The evidence needed to explain why a state changed or why a decision happened.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
         <section class="detail-brief" aria-labelledby="detailBriefTitle">
           <div class="detail-brief__header">
             <p class="eyebrow">Know Your OSs</p>
-            <h2 id="detailBriefTitle">5. The real OS authorities people are confused by</h2>
+            <h2 id="detailBriefTitle">6. The real OS authorities people are confused by</h2>
             <p>
               “Checkpoint” is only our car-story translation. Satyam’s real
               structure is a set of Operating Systems: each one owns exactly one
@@ -389,7 +479,7 @@
         <section class="detail-brief" aria-labelledby="nonOsBriefTitle">
           <div class="detail-brief__header">
             <p class="eyebrow">Non-OS Components</p>
-            <h2 id="nonOsBriefTitle">6. Non-OS Components</h2>
+            <h2 id="nonOsBriefTitle">7. Non-OS Components</h2>
             <p>
               These are still important, but they do not own lifecycle truth.
               They support OS authorities, implement them, or define controlled
