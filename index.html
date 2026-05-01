@@ -8,10 +8,18 @@
       name="description"
       content="A Three.js visual translator for understanding Wiom OS documents without technical jargon."
     />
+    <link rel="alternate" type="text/markdown" href="/wiom-os.md" title="Wiom OS markdown context" />
   </head>
   <body>
     <main id="app">
       <section class="shell" aria-label="dummy-os visual workspace">
+        <div class="utility-bar" aria-label="Markdown context actions">
+          <a href="/wiom-os.md" class="utility-bar__file">wiom-os.md</a>
+          <button class="copy-markdown-button" id="copyMarkdown" type="button">
+            Copy wiom-os.md
+          </button>
+        </div>
+
         <header class="masthead">
           <div>
             <p class="eyebrow">dummy-os</p>
@@ -441,6 +449,26 @@
         </section>
       </section>
     </main>
+
+    <div class="modal-shell" id="markdownModal" hidden>
+      <div class="modal-backdrop" data-modal-close></div>
+      <section
+        class="markdown-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="markdownModalTitle"
+        aria-describedby="markdownModalBody"
+      >
+        <p class="eyebrow" id="markdownModalEyebrow">Copied context</p>
+        <h2 id="markdownModalTitle">wiom-os.md is on your clipboard</h2>
+        <p id="markdownModalBody">
+          You can paste this .md file into ChatGPT, Claude, or Gemini to give it
+          context about Wiom OS.
+        </p>
+        <button class="modal-close-button" type="button" data-modal-close>Close</button>
+      </section>
+    </div>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

@@ -65,6 +65,12 @@ const macroStage = document.querySelector('#macroStage');
 const sceneSummary = document.querySelector('#sceneSummary');
 const sceneLesson = document.querySelector('#sceneLesson');
 const sceneButtons = document.querySelectorAll('.view-button');
+const copyMarkdownButton = document.querySelector('#copyMarkdown');
+const markdownModal = document.querySelector('#markdownModal');
+const markdownModalEyebrow = document.querySelector('#markdownModalEyebrow');
+const markdownModalTitle = document.querySelector('#markdownModalTitle');
+const markdownModalBody = document.querySelector('#markdownModalBody');
+const modalCloseButtons = document.querySelectorAll('[data-modal-close]');
 
 const threeScene = new THREE.Scene();
 threeScene.fog = new THREE.FogExp2(0x05080d, 0.033);
@@ -106,6 +112,14 @@ const macroSystem = macroStage ? initMacroScene(macroStage) : null;
 
 sceneButtons.forEach((button) => {
   button.addEventListener('click', () => setScene(button.dataset.scene));
+});
+
+copyMarkdownButton?.addEventListener('click', copyMarkdownContext);
+modalCloseButtons.forEach((button) => {
+  button.addEventListener('click', closeMarkdownModal);
+});
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') closeMarkdownModal();
 });
 
 stage.addEventListener('pointermove', onPointerMove);
@@ -400,6 +414,61 @@ function buildStateTermScene() {
   });
 
   selectInfo(stateInfo);
+}
+
+async function copyMarkdownContext() {
+  try {
+    const response = await fetch('/wiom-os.md', { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Failed to load wiom-os.md: ${response.status}`);
+    const markdown = await response.text();
+    await writeClipboard(markdown);
+    openMarkdownModal({
+      eyebrow: 'Copied context',
+      title: 'wiom-os.md is on your clipboard',
+      body: 'You can paste this .md file into ChatGPT, Claude, or Gemini to give it context about Wiom OS.'
+    });
+  } catch (error) {
+    console.error(error);
+    openMarkdownModal({
+      eyebrow: 'Copy failed',
+      title: 'Could not copy wiom-os.md',
+      body: 'Open wiom-os.md from the sticky header and copy it manually into ChatGPT, Claude, or Gemini.'
+    });
+  }
+}
+
+async function writeClipboard(text) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.setAttribute('readonly', '');
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textarea);
+}
+
+function openMarkdownModal(copy) {
+  if (!markdownModal) return;
+  if (markdownModalEyebrow) markdownModalEyebrow.textContent = copy.eyebrow;
+  if (markdownModalTitle) markdownModalTitle.textContent = copy.title;
+  if (markdownModalBody) markdownModalBody.textContent = copy.body;
+  markdownModal.hidden = false;
+  document.body.classList.add('has-modal');
+  markdownModal.querySelector('button')?.focus();
+}
+
+function closeMarkdownModal() {
+  if (!markdownModal || markdownModal.hidden) return;
+  markdownModal.hidden = true;
+  document.body.classList.remove('has-modal');
+  copyMarkdownButton?.focus();
 }
 
 function initMacroScene(container) {

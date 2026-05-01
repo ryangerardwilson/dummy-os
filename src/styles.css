@@ -45,6 +45,10 @@ button {
   min-height: 100svh;
 }
 
+.has-modal {
+  overflow: hidden;
+}
+
 .shell {
   display: grid;
   grid-template-rows: auto;
@@ -53,6 +57,61 @@ button {
   gap: clamp(22px, 3.2vw, 42px);
   margin: 0 auto;
   padding: clamp(20px, 3vw, 34px) 0 clamp(28px, 4vw, 52px);
+}
+
+.utility-bar {
+  position: sticky;
+  top: 10px;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: min(100%, 640px);
+  justify-self: center;
+  padding: 8px;
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 18px 50px rgba(17, 17, 17, 0.1);
+  backdrop-filter: blur(20px);
+}
+
+.utility-bar__file,
+.copy-markdown-button,
+.modal-close-button {
+  font-family: 'Noto Sans', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.utility-bar__file {
+  padding: 0 12px;
+  color: var(--ink);
+  font-size: 0.68rem;
+  text-decoration: none;
+}
+
+.copy-markdown-button,
+.modal-close-button {
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.copy-markdown-button {
+  padding: 10px 14px;
+  font-size: 0.62rem;
+}
+
+.copy-markdown-button:hover,
+.modal-close-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(229, 23, 143, 0.28);
 }
 
 .masthead {
@@ -772,6 +831,58 @@ h1 {
   line-height: 1.38;
 }
 
+.modal-shell[hidden] {
+  display: none;
+}
+
+.modal-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 8, 13, 0.58);
+  backdrop-filter: blur(10px);
+}
+
+.markdown-modal {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 430px);
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(229, 23, 143, 0.14), transparent 18rem),
+    rgba(255, 255, 255, 0.94);
+  box-shadow: 0 34px 100px rgba(0, 0, 0, 0.28);
+}
+
+.markdown-modal h2 {
+  margin: 0;
+  font-size: clamp(1.3rem, 3vw, 2.2rem);
+  line-height: 0.96;
+  letter-spacing: var(--heading-sub-tracking);
+  text-align: left;
+}
+
+.markdown-modal p:not(.eyebrow) {
+  margin: 14px 0 22px;
+  color: #4f4f55;
+  line-height: 1.55;
+}
+
+.modal-close-button {
+  padding: 10px 16px;
+  font-size: 0.64rem;
+}
+
 @media (max-width: 1020px) {
   .masthead,
   .workspace,
@@ -817,6 +928,15 @@ h1 {
 @media (max-width: 640px) {
   .shell {
     padding: 10px;
+  }
+
+  .utility-bar {
+    top: 8px;
+    width: 100%;
+  }
+
+  .utility-bar__file {
+    padding: 0 8px;
   }
 
   .stage,

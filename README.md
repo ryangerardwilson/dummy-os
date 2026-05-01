@@ -30,6 +30,11 @@ The page is organized into six sections:
 - 5. The real OS authorities people are confused by: maps the actual OS authorities.
 - 6. Non-OS Components: explains important artifacts and implementations that are not OS authorities.
 
+The public `public/wiom-os.md` file is the AI-ingestible version of the
+website. Keep it aligned with visible copy whenever the website content changes.
+The sticky `Copy wiom-os.md` control fetches that file and copies it to the
+clipboard.
+
 The main micro journey explains the single-customer flow:
 
 - Car story: introduces the car, road, and driving manual.
