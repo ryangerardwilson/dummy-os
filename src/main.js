@@ -121,9 +121,7 @@ copyMarkdownButton?.addEventListener('click', copyMarkdownContext);
 modalCloseButtons.forEach((button) => {
   button.addEventListener('click', closeMarkdownModal);
 });
-window.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') closeMarkdownModal();
-});
+window.addEventListener('keydown', onGlobalKeydown);
 window.addEventListener('scroll', onWindowScroll, { passive: true });
 
 stage.addEventListener('pointermove', onPointerMove);
@@ -424,6 +422,32 @@ function onWindowScroll() {
   if (scrollTicking) return;
   scrollTicking = true;
   requestAnimationFrame(updateUtilityBarVisibility);
+}
+
+function onGlobalKeydown(event) {
+  if (event.key === 'Escape') {
+    closeMarkdownModal();
+    return;
+  }
+
+  if (shouldIgnoreKeyboardScroll(event)) return;
+
+  const key = event.key.toLowerCase();
+  if (key !== 'j' && key !== 'k') return;
+
+  event.preventDefault();
+  window.scrollBy({
+    top: (key === 'j' ? 1 : -1) * Math.max(280, window.innerHeight * 0.72),
+    behavior: 'smooth'
+  });
+}
+
+function shouldIgnoreKeyboardScroll(event) {
+  if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return true;
+  if (markdownModal && !markdownModal.hidden) return true;
+  if (!(event.target instanceof HTMLElement)) return false;
+
+  return event.target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName);
 }
 
 function updateUtilityBarVisibility() {
