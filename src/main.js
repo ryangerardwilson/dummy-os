@@ -62,6 +62,7 @@ const palette = {
 
 const stage = document.querySelector('#stage');
 const macroStage = document.querySelector('#macroStage');
+const cockroachStage = document.querySelector('#cockroachStage');
 const utilityBar = document.querySelector('.utility-bar');
 const sceneSummary = document.querySelector('#sceneSummary');
 const sceneLesson = document.querySelector('#sceneLesson');
@@ -114,6 +115,7 @@ addLights();
 addBackdrop();
 setScene('car');
 const macroSystem = macroStage ? initMacroScene(macroStage) : null;
+const cockroachSystem = cockroachStage ? initCockroachScene(cockroachStage) : null;
 
 sceneButtons.forEach((button) => {
   button.addEventListener('click', () => setScene(button.dataset.scene));
@@ -561,6 +563,160 @@ function closeMarkdownModal() {
   copyMarkdownButton?.focus();
 }
 
+function initCockroachScene(container) {
+  const cockroachScene = new THREE.Scene();
+  cockroachScene.fog = new THREE.FogExp2(0x05080d, 0.04);
+
+  const cockroachCamera = new THREE.PerspectiveCamera(46, container.clientWidth / container.clientHeight, 0.1, 1000);
+  cockroachCamera.position.set(0, 7.6, 8.8);
+  cockroachCamera.lookAt(0, 0, 0);
+
+  const cockroachRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  cockroachRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  cockroachRenderer.setSize(container.clientWidth, container.clientHeight);
+  cockroachRenderer.outputColorSpace = THREE.SRGBColorSpace;
+  container.appendChild(cockroachRenderer.domElement);
+
+  const cockroachLabelRenderer = new CSS2DRenderer();
+  cockroachLabelRenderer.setSize(container.clientWidth, container.clientHeight);
+  cockroachLabelRenderer.domElement.className = 'label-layer label-layer--cockroach';
+  container.appendChild(cockroachLabelRenderer.domElement);
+
+  cockroachScene.add(new THREE.AmbientLight(0xc5dcff, 1.5));
+  const key = new THREE.DirectionalLight(0xffffff, 2.8);
+  key.position.set(4, 8, 6);
+  cockroachScene.add(key);
+  const pinkRim = new THREE.PointLight(0xe5178f, 12, 28);
+  pinkRim.position.set(-4.5, 3.5, 2.8);
+  cockroachScene.add(pinkRim);
+
+  const cockroachRoot = new THREE.Group();
+  cockroachRoot.rotation.x = -0.22;
+  cockroachScene.add(cockroachRoot);
+
+  const ground = box(8.6, 0.035, 5.4, palette.grass, { y: -0.08, opacity: 0.42 });
+  cockroachRoot.add(ground);
+  const grid = new THREE.GridHelper(8.5, 12, 0x352340, 0x102434);
+  grid.position.y = -0.04;
+  grid.material.opacity = 0.18;
+  grid.material.transparent = true;
+  cockroachRoot.add(grid);
+
+  const shellColor = '#7a3f26';
+  const shellDark = '#2b1715';
+  const amber = '#d49a4a';
+  const bodyParts = [];
+  const bobBaseHeights = [];
+  const feelers = [];
+
+  const abdomen = sphere(1, shellColor, { y: 0.42 });
+  abdomen.scale.set(1.18, 0.34, 1.72);
+  abdomen.rotation.y = 0.02;
+  bodyParts.push(abdomen);
+  bobBaseHeights.push(abdomen.position.y);
+  cockroachRoot.add(abdomen);
+
+  const thorax = sphere(0.78, '#9a5530', { x: 0, y: 0.47, z: -1.15 });
+  thorax.scale.set(1.12, 0.34, 0.95);
+  bodyParts.push(thorax);
+  bobBaseHeights.push(thorax.position.y);
+  cockroachRoot.add(thorax);
+
+  const head = sphere(0.5, amber, { x: 0, y: 0.5, z: -2.02 });
+  head.scale.set(0.92, 0.32, 0.68);
+  bodyParts.push(head);
+  bobBaseHeights.push(head.position.y);
+  cockroachRoot.add(head);
+
+  const spine = box(0.08, 0.08, 3.35, palette.yellow, { x: 0, y: 0.82, z: -0.2, opacity: 0.72 });
+  cockroachRoot.add(spine);
+
+  [-0.52, 0.52].forEach((x) => {
+    const stripe = box(0.035, 0.06, 2.75, shellDark, { x, y: 0.78, z: 0.15, opacity: 0.56 });
+    stripe.rotation.z = x > 0 ? -0.08 : 0.08;
+    cockroachRoot.add(stripe);
+  });
+
+  [
+    [-1.22, -1.24, -2.25, -2.06],
+    [1.22, 1.24, 2.25, -2.06],
+    [-1.05, -0.48, -2.45, -0.85],
+    [1.05, 0.48, 2.45, -0.85],
+    [-1.04, 0.42, -2.35, 0.48],
+    [1.04, 0.42, 2.35, 0.48],
+    [-0.88, 1.1, -1.85, 1.64],
+    [0.88, 1.1, 1.85, 1.64]
+  ].forEach(([x1, z1, x2, z2], index) => {
+    const leg = tubePath(
+      [
+        new THREE.Vector3(x1 * 0.55, 0.42, z1),
+        new THREE.Vector3(x1, 0.3, (z1 + z2) / 2),
+        new THREE.Vector3(x2, 0.22, z2)
+      ],
+      index < 4 ? palette.teal : palette.blue,
+      0.035
+    );
+    cockroachRoot.add(leg);
+  });
+
+  [
+    [0.18, -2.34, 1.9, -3.35],
+    [-0.18, -2.34, -1.9, -3.35]
+  ].forEach(([x1, z1, x2, z2], index) => {
+    const feeler = tubePath(
+      [
+        new THREE.Vector3(x1, 0.56, z1),
+        new THREE.Vector3(x2 * 0.45, 0.8, -2.95),
+        new THREE.Vector3(x2, 0.68, z2)
+      ],
+      index === 0 ? palette.green : palette.violet,
+      0.025
+    );
+    feelers.push(feeler);
+    cockroachRoot.add(feeler);
+  });
+
+  addMacroLabel(cockroachRoot, 'OWNED TRUTH', 0, 1.3, -2.15, 'label label--cockroach');
+  addMacroLabel(cockroachRoot, 'STATE MACHINE', 0, 1.32, -0.12, 'label label--cockroach');
+  addMacroLabel(cockroachRoot, 'INPUTS', -2.55, 0.72, -0.7, 'label label--cockroach');
+  addMacroLabel(cockroachRoot, 'OUTPUTS', 2.55, 0.72, -0.7, 'label label--cockroach');
+  addMacroLabel(cockroachRoot, 'INVARIANT SHELL', 0, 1.16, 1.4, 'label label--cockroach');
+  addMacroLabel(cockroachRoot, 'AUDIT TRAIL', 0, 0.48, 2.55, 'label label--caption');
+
+  function tubePath(points, colorValue, radius) {
+    const curve = new THREE.CatmullRomCurve3(points);
+    return new THREE.Mesh(
+      new THREE.TubeGeometry(curve, 24, radius, 8, false),
+      new THREE.MeshStandardMaterial({
+        color: colorValue,
+        emissive: new THREE.Color(colorValue).multiplyScalar(0.2),
+        roughness: 0.42,
+        metalness: 0.12
+      })
+    );
+  }
+
+  return {
+    resize() {
+      cockroachCamera.aspect = container.clientWidth / container.clientHeight;
+      cockroachCamera.updateProjectionMatrix();
+      cockroachRenderer.setSize(container.clientWidth, container.clientHeight);
+      cockroachLabelRenderer.setSize(container.clientWidth, container.clientHeight);
+    },
+    tick(elapsed) {
+      cockroachRoot.rotation.y = Math.sin(elapsed * 0.35) * 0.18;
+      bodyParts.forEach((part, index) => {
+        part.position.y = bobBaseHeights[index] + Math.sin(elapsed * 1.8 + index) * 0.018;
+      });
+      feelers.forEach((feeler, index) => {
+        feeler.rotation.y = Math.sin(elapsed * 1.4 + index) * 0.08;
+      });
+      cockroachRenderer.render(cockroachScene, cockroachCamera);
+      cockroachLabelRenderer.render(cockroachScene, cockroachCamera);
+    }
+  };
+}
+
 function initMacroScene(container) {
   const macroScene = new THREE.Scene();
   macroScene.fog = new THREE.FogExp2(0x05080d, 0.028);
@@ -993,6 +1149,7 @@ function onResize() {
   renderer.setSize(stage.clientWidth, stage.clientHeight);
   labelRenderer.setSize(stage.clientWidth, stage.clientHeight);
   macroSystem?.resize();
+  cockroachSystem?.resize();
 }
 
 function animate() {
@@ -1004,4 +1161,5 @@ function animate() {
   renderer.render(threeScene, camera);
   labelRenderer.render(threeScene, camera);
   macroSystem?.tick(elapsed);
+  cockroachSystem?.tick(elapsed);
 }

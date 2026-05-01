@@ -116,6 +116,8 @@ Simple test:
 - Does it own truth and lifecycle? If yes, it may be an OS. If no, it is more likely a spec, service, parameter, contract, renderer, or subsystem.
 - OS = official truth owner + legal states + allowed moves + clear handoffs.
 
+The page shows this as a cockroach anatomy specimen: the head is owned truth, the body is the state machine, the legs are inputs and outputs, the shell is invariants, and the base plate is the audit trail.
+
 Essential attributes of a Wiom OS:
 
 - Owned truth: The one fact this OS is responsible for. Example: connection state, device custody, payout entitlement.
