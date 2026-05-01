@@ -62,7 +62,7 @@ const palette = {
 
 const stage = document.querySelector('#stage');
 const macroStage = document.querySelector('#macroStage');
-const cockroachStage = document.querySelector('#cockroachStage');
+const parcelStage = document.querySelector('#parcelStage');
 const utilityBar = document.querySelector('.utility-bar');
 const sceneSummary = document.querySelector('#sceneSummary');
 const sceneLesson = document.querySelector('#sceneLesson');
@@ -115,7 +115,7 @@ addLights();
 addBackdrop();
 setScene('car');
 const macroSystem = macroStage ? initMacroScene(macroStage) : null;
-const cockroachSystem = cockroachStage ? initCockroachScene(cockroachStage) : null;
+const parcelSystem = parcelStage ? initParcelScene(parcelStage) : null;
 
 sceneButtons.forEach((button) => {
   button.addEventListener('click', () => setScene(button.dataset.scene));
@@ -563,156 +563,160 @@ function closeMarkdownModal() {
   copyMarkdownButton?.focus();
 }
 
-function initCockroachScene(container) {
-  const cockroachScene = new THREE.Scene();
-  cockroachScene.fog = new THREE.FogExp2(0x05080d, 0.04);
+function initParcelScene(container) {
+  const parcelScene = new THREE.Scene();
+  parcelScene.fog = new THREE.FogExp2(0x05080d, 0.035);
 
-  const cockroachCamera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 1000);
-  cockroachCamera.position.set(0, 6.4, 6.7);
-  cockroachCamera.lookAt(0, 0, 0);
+  const parcelCamera = new THREE.PerspectiveCamera(39, container.clientWidth / container.clientHeight, 0.1, 1000);
+  parcelCamera.position.set(0, 7.2, 8.2);
+  parcelCamera.lookAt(0, 0.45, 0);
 
-  const cockroachRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  cockroachRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  cockroachRenderer.setSize(container.clientWidth, container.clientHeight);
-  cockroachRenderer.outputColorSpace = THREE.SRGBColorSpace;
-  container.appendChild(cockroachRenderer.domElement);
+  const parcelRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  parcelRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  parcelRenderer.setSize(container.clientWidth, container.clientHeight);
+  parcelRenderer.outputColorSpace = THREE.SRGBColorSpace;
+  container.appendChild(parcelRenderer.domElement);
 
-  const cockroachLabelRenderer = new CSS2DRenderer();
-  cockroachLabelRenderer.setSize(container.clientWidth, container.clientHeight);
-  cockroachLabelRenderer.domElement.className = 'label-layer label-layer--cockroach';
-  container.appendChild(cockroachLabelRenderer.domElement);
+  const parcelLabelRenderer = new CSS2DRenderer();
+  parcelLabelRenderer.setSize(container.clientWidth, container.clientHeight);
+  parcelLabelRenderer.domElement.className = 'label-layer label-layer--parcel';
+  container.appendChild(parcelLabelRenderer.domElement);
 
-  cockroachScene.add(new THREE.AmbientLight(0xc5dcff, 1.5));
-  const key = new THREE.DirectionalLight(0xffffff, 2.8);
-  key.position.set(4, 8, 6);
-  cockroachScene.add(key);
-  const pinkRim = new THREE.PointLight(0xe5178f, 12, 28);
-  pinkRim.position.set(-4.5, 3.5, 2.8);
-  cockroachScene.add(pinkRim);
+  parcelScene.add(new THREE.AmbientLight(0xc5dcff, 1.35));
+  const key = new THREE.DirectionalLight(0xffffff, 2.7);
+  key.position.set(5, 8, 6);
+  parcelScene.add(key);
+  const tealRim = new THREE.PointLight(0x5fffe1, 10, 30);
+  tealRim.position.set(-5, 3.4, 2.6);
+  parcelScene.add(tealRim);
+  const pinkRim = new THREE.PointLight(0xe5178f, 8, 28);
+  pinkRim.position.set(4.5, 3.2, -2.8);
+  parcelScene.add(pinkRim);
 
-  const cockroachRoot = new THREE.Group();
-  cockroachRoot.rotation.x = -0.22;
-  cockroachScene.add(cockroachRoot);
+  const parcelRoot = new THREE.Group();
+  parcelRoot.rotation.x = -0.18;
+  parcelScene.add(parcelRoot);
 
-  const ground = box(8.6, 0.035, 5.4, palette.grass, { y: -0.08, opacity: 0.42 });
-  cockroachRoot.add(ground);
-  const grid = new THREE.GridHelper(8.5, 12, 0x352340, 0x102434);
+  const ground = box(10.4, 0.035, 5.9, palette.grass, { y: -0.08, opacity: 0.42 });
+  parcelRoot.add(ground);
+  const grid = new THREE.GridHelper(10.3, 14, 0x352340, 0x102434);
   grid.position.y = -0.04;
   grid.material.opacity = 0.18;
   grid.material.transparent = true;
-  cockroachRoot.add(grid);
+  parcelRoot.add(grid);
 
-  const shellColor = '#7a3f26';
-  const shellDark = '#2b1715';
-  const amber = '#d49a4a';
-  const bodyParts = [];
-  const bobBaseHeights = [];
-  const feelers = [];
+  const beltRollers = [];
+  const statusLights = [];
+  const belt = box(9.2, 0.16, 2.45, palette.asphalt, { y: 0.1, z: 0.35, opacity: 0.84 });
+  parcelRoot.add(belt);
+  parcelRoot.add(box(9.4, 0.1, 0.12, palette.teal, { y: 0.25, z: -0.9, opacity: 0.52 }));
+  parcelRoot.add(box(9.4, 0.1, 0.12, palette.teal, { y: 0.25, z: 1.6, opacity: 0.52 }));
 
-  const abdomen = sphere(1, shellColor, { y: 0.42 });
-  abdomen.scale.set(1.18, 0.34, 1.72);
-  abdomen.rotation.y = 0.02;
-  bodyParts.push(abdomen);
-  bobBaseHeights.push(abdomen.position.y);
-  cockroachRoot.add(abdomen);
-
-  const thorax = sphere(0.78, '#9a5530', { x: 0, y: 0.47, z: -1.15 });
-  thorax.scale.set(1.12, 0.34, 0.95);
-  bodyParts.push(thorax);
-  bobBaseHeights.push(thorax.position.y);
-  cockroachRoot.add(thorax);
-
-  const head = sphere(0.5, amber, { x: 0, y: 0.5, z: -2.02 });
-  head.scale.set(0.92, 0.32, 0.68);
-  bodyParts.push(head);
-  bobBaseHeights.push(head.position.y);
-  cockroachRoot.add(head);
-
-  const spine = box(0.08, 0.08, 3.35, palette.yellow, { x: 0, y: 0.82, z: -0.2, opacity: 0.72 });
-  cockroachRoot.add(spine);
-
-  [-0.52, 0.52].forEach((x) => {
-    const stripe = box(0.035, 0.06, 2.75, shellDark, { x, y: 0.78, z: 0.15, opacity: 0.56 });
-    stripe.rotation.z = x > 0 ? -0.08 : 0.08;
-    cockroachRoot.add(stripe);
-  });
-
-  [
-    [-1.22, -1.24, -2.25, -2.06],
-    [1.22, 1.24, 2.25, -2.06],
-    [-1.05, -0.48, -2.45, -0.85],
-    [1.05, 0.48, 2.45, -0.85],
-    [-1.04, 0.42, -2.35, 0.48],
-    [1.04, 0.42, 2.35, 0.48],
-    [-0.88, 1.1, -1.85, 1.64],
-    [0.88, 1.1, 1.85, 1.64]
-  ].forEach(([x1, z1, x2, z2], index) => {
-    const leg = tubePath(
-      [
-        new THREE.Vector3(x1 * 0.55, 0.42, z1),
-        new THREE.Vector3(x1, 0.3, (z1 + z2) / 2),
-        new THREE.Vector3(x2, 0.22, z2)
-      ],
-      index < 4 ? palette.teal : palette.blue,
-      0.035
-    );
-    cockroachRoot.add(leg);
-  });
-
-  [
-    [0.18, -2.34, 1.9, -3.35],
-    [-0.18, -2.34, -1.9, -3.35]
-  ].forEach(([x1, z1, x2, z2], index) => {
-    const feeler = tubePath(
-      [
-        new THREE.Vector3(x1, 0.56, z1),
-        new THREE.Vector3(x2 * 0.45, 0.8, -2.95),
-        new THREE.Vector3(x2, 0.68, z2)
-      ],
-      index === 0 ? palette.green : palette.violet,
-      0.025
-    );
-    feelers.push(feeler);
-    cockroachRoot.add(feeler);
-  });
-
-  addMacroLabel(cockroachRoot, 'OWNED TRUTH', 0, 1.3, -2.15, 'label label--cockroach');
-  addMacroLabel(cockroachRoot, 'STATE MACHINE', 0, 1.32, -0.12, 'label label--cockroach');
-  addMacroLabel(cockroachRoot, 'INPUTS', -2.55, 0.72, -0.7, 'label label--cockroach');
-  addMacroLabel(cockroachRoot, 'OUTPUTS', 2.55, 0.72, -0.7, 'label label--cockroach');
-  addMacroLabel(cockroachRoot, 'INVARIANT SHELL', 0, 1.16, 1.4, 'label label--cockroach');
-  addMacroLabel(cockroachRoot, 'AUDIT TRAIL', 0, 0.48, 2.55, 'label label--caption');
-
-  function tubePath(points, colorValue, radius) {
-    const curve = new THREE.CatmullRomCurve3(points);
-    return new THREE.Mesh(
-      new THREE.TubeGeometry(curve, 24, radius, 8, false),
-      new THREE.MeshStandardMaterial({
-        color: colorValue,
-        emissive: new THREE.Color(colorValue).multiplyScalar(0.2),
-        roughness: 0.42,
-        metalness: 0.12
-      })
-    );
+  for (let x = -4.1; x <= 4.1; x += 0.75) {
+    const roller = cylinder(0.09, 2.25, '#61727c', { x, y: 0.22, z: 0.35, rotX: Math.PI / 2 });
+    beltRollers.push(roller);
+    parcelRoot.add(roller);
   }
+
+  const parcel = new THREE.Group();
+  parcelRoot.add(parcel);
+  const carton = box(1.65, 0.9, 1.25, palette.paper, { y: 0.68 });
+  parcel.add(carton);
+  parcel.add(box(1.72, 0.08, 0.1, palette.yellow, { y: 1.15, z: 0, opacity: 0.82 }));
+  parcel.add(box(0.12, 0.92, 1.32, palette.yellow, { y: 0.68, z: 0, opacity: 0.72 }));
+  parcel.add(box(0.72, 0.46, 0.055, palette.white, { x: -0.22, y: 0.72, z: -0.66 }));
+  [-0.42, -0.28, -0.14, 0.08].forEach((x, index) => {
+    parcel.add(box(0.04, 0.34 - index * 0.035, 0.06, '#111111', { x, y: 0.72, z: -0.7 }));
+  });
+  addMacroLabel(parcel, 'PARCEL = OBJECT', 0, 1.45, 0, 'label label--parcel');
+
+  const scannerBeam = box(0.08, 1.35, 2.16, palette.teal, { x: -0.45, y: 0.95, z: 0.35, opacity: 0.24 });
+  parcelRoot.add(scannerBeam);
+  [-3.05, -0.45, 2.15].forEach((x, index) => {
+    const color = index === 1 ? palette.teal : palette.blue;
+    parcelRoot.add(box(0.13, 1.55, 0.13, color, { x, y: 0.88, z: -0.78 }));
+    parcelRoot.add(box(0.13, 1.55, 0.13, color, { x, y: 0.88, z: 1.48 }));
+    parcelRoot.add(box(0.16, 0.14, 2.38, color, { x, y: 1.62, z: 0.35 }));
+  });
+  addMacroLabel(parcelRoot, 'SCANNER GATES = VALID MOVES', -0.45, 2.12, 1.55, 'label label--parcel');
+
+  const guard = new THREE.Group();
+  guard.position.set(1.08, 0.8, 1.82);
+  guard.rotation.z = -0.42;
+  guard.add(box(0.18, 0.12, 2.1, palette.red, { opacity: 0.9 }));
+  guard.add(box(0.2, 0.15, 0.38, palette.yellow, { z: -0.72, opacity: 0.9 }));
+  guard.add(box(0.2, 0.15, 0.38, palette.yellow, { z: 0.02, opacity: 0.9 }));
+  guard.add(box(0.2, 0.15, 0.38, palette.yellow, { z: 0.76, opacity: 0.9 }));
+  parcelRoot.add(guard);
+  addMacroLabel(parcelRoot, 'NO-SKIP RULE = GUARD', 1.15, 1.36, 2.1, 'label label--parcel');
+
+  const trackingScreen = new THREE.Group();
+  trackingScreen.position.set(3.55, 1.32, -1.55);
+  trackingScreen.rotation.y = -0.28;
+  trackingScreen.add(box(1.86, 2.18, 0.14, palette.white, { opacity: 0.96 }));
+  trackingScreen.add(box(1.54, 0.34, 0.17, palette.green, { y: 0.72, z: 0.05, opacity: 0.86 }));
+  trackingScreen.add(box(1.54, 0.18, 0.17, palette.teal, { y: 0.28, z: 0.05, opacity: 0.72 }));
+  trackingScreen.add(box(1.22, 0.14, 0.17, palette.blue, { y: -0.08, z: 0.05, opacity: 0.6 }));
+  trackingScreen.add(box(0.92, 0.14, 0.17, palette.yellow, { y: -0.42, z: 0.05, opacity: 0.62 }));
+  [-0.58, -0.2, 0.18, 0.56].forEach((x) => {
+    const light = sphere(0.075, '#23333a', { x, y: -0.82, z: 0.12 });
+    statusLights.push(light);
+    trackingScreen.add(light);
+  });
+  addMacroLabel(trackingScreen, 'OFFICIAL TRACKING PAGE', 0, 1.35, 0.14, 'label label--parcel');
+  addMacroLabel(trackingScreen, 'CURRENT STATUS = OWNED TRUTH', 0, -1.18, 0.14, 'label label--caption');
+  parcelRoot.add(trackingScreen);
+
+  const settingsSign = new THREE.Group();
+  settingsSign.position.set(-4.05, 0.95, -1.55);
+  settingsSign.add(cylinder(0.045, 1.55, '#111111', { y: -0.2 }));
+  settingsSign.add(box(1.18, 0.64, 0.12, palette.yellow, { y: 0.58 }));
+  settingsSign.add(box(0.82, 0.08, 0.14, palette.asphalt, { y: 0.68, z: 0.05 }));
+  settingsSign.add(box(0.62, 0.08, 0.14, palette.asphalt, { y: 0.48, z: 0.05 }));
+  parcelRoot.add(settingsSign);
+  addMacroLabel(parcelRoot, 'DELIVERY SETTINGS = PARAMETERS', -4.05, 1.86, -1.55, 'label label--parcel');
+
+  const auditStrip = new THREE.Group();
+  auditStrip.position.set(-1.2, 0.28, 2.55);
+  auditStrip.add(box(5.9, 0.05, 0.62, palette.white, { opacity: 0.92 }));
+  for (let x = -2.65; x <= 2.65; x += 0.7) {
+    auditStrip.add(box(0.08, 0.07, 0.44, palette.teal, { x, y: 0.08, z: 0, opacity: 0.72 }));
+  }
+  parcelRoot.add(auditStrip);
+  addMacroLabel(parcelRoot, 'SCAN HISTORY = AUDIT TRAIL', -1.2, 0.84, 2.55, 'label label--parcel');
+
+  const inputCard = box(0.86, 0.56, 0.08, palette.white, { x: -4.55, y: 0.78, z: 0.35, rotY: 0.28, opacity: 0.92 });
+  parcelRoot.add(inputCard);
+  addMacroLabel(parcelRoot, 'INPUTS: ADDRESS + SCANS', -4.45, 1.32, 0.35, 'label label--parcel');
+  addMacroLabel(parcelRoot, 'OUTPUTS: SMS + HANDOFFS', 4.28, 0.98, 0.72, 'label label--parcel');
 
   return {
     resize() {
-      cockroachCamera.aspect = container.clientWidth / container.clientHeight;
-      cockroachCamera.updateProjectionMatrix();
-      cockroachRenderer.setSize(container.clientWidth, container.clientHeight);
-      cockroachLabelRenderer.setSize(container.clientWidth, container.clientHeight);
+      parcelCamera.aspect = container.clientWidth / container.clientHeight;
+      parcelCamera.updateProjectionMatrix();
+      parcelRenderer.setSize(container.clientWidth, container.clientHeight);
+      parcelLabelRenderer.setSize(container.clientWidth, container.clientHeight);
     },
     tick(elapsed) {
-      cockroachRoot.rotation.y = Math.sin(elapsed * 0.35) * 0.18;
-      bodyParts.forEach((part, index) => {
-        part.position.y = bobBaseHeights[index] + Math.sin(elapsed * 1.8 + index) * 0.018;
+      const progress = loopProgress(elapsed, 0.075);
+      const activeStatus = Math.min(statusLights.length - 1, Math.floor(progress * statusLights.length));
+      parcel.position.x = THREE.MathUtils.lerp(-3.75, 2.65, progress);
+      parcel.position.y = Math.sin(elapsed * 3.8) * 0.025;
+      parcel.rotation.y = Math.sin(elapsed * 0.9) * 0.035;
+      parcelRoot.rotation.y = Math.sin(elapsed * 0.22) * 0.06;
+      trackingScreen.rotation.y = -0.28 + Math.sin(elapsed * 0.72) * 0.025;
+      scannerBeam.material.opacity = 0.18 + Math.sin(elapsed * 5.2) * 0.08;
+      guard.rotation.z = -0.42 + Math.sin(elapsed * 1.4) * 0.035;
+      beltRollers.forEach((roller) => {
+        roller.rotation.z = elapsed * 2.5;
       });
-      feelers.forEach((feeler, index) => {
-        feeler.rotation.y = Math.sin(elapsed * 1.4 + index) * 0.08;
+      statusLights.forEach((light, index) => {
+        const active = index <= activeStatus;
+        light.material.color.set(active ? palette.green : '#23333a');
+        light.material.emissive.set(active ? palette.green : '#23333a');
       });
-      cockroachRenderer.render(cockroachScene, cockroachCamera);
-      cockroachLabelRenderer.render(cockroachScene, cockroachCamera);
+      parcelRenderer.render(parcelScene, parcelCamera);
+      parcelLabelRenderer.render(parcelScene, parcelCamera);
     }
   };
 }
@@ -1149,7 +1153,7 @@ function onResize() {
   renderer.setSize(stage.clientWidth, stage.clientHeight);
   labelRenderer.setSize(stage.clientWidth, stage.clientHeight);
   macroSystem?.resize();
-  cockroachSystem?.resize();
+  parcelSystem?.resize();
 }
 
 function animate() {
@@ -1161,5 +1165,5 @@ function animate() {
   renderer.render(threeScene, camera);
   labelRenderer.render(threeScene, camera);
   macroSystem?.tick(elapsed);
-  cockroachSystem?.tick(elapsed);
+  parcelSystem?.tick(elapsed);
 }

@@ -27,7 +27,7 @@ The page is organized into seven sections:
 - 2. If you only need to remember 3 things ...: stitches the car metaphor back to the OS document structure.
 - 3. The Wiom OS Universe: animates the wider Wiom system of demand, supply, assets, money, quality, support, and access.
 - 4. Read the map from authority to artifact: explains the taxonomy order.
-- 5. Dissecting an OS like a cockroach: explains the essential attributes of an OS.
+- 5. Dissecting an OS like courier tracking: explains the essential attributes of an OS.
 - 6. The real OS authorities people are confused by: maps the actual OS authorities.
 - 7. Non-OS Components: explains important artifacts and implementations that are not OS authorities.
 

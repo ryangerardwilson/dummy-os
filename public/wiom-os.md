@@ -107,31 +107,31 @@ Reading order:
 5. Tier ladder for specs: Once a spec changes, L1, L2, or L3 tells you how risky that change is. L1 is low-risk polish. L2 is a local behavior change. L3 is system-level risk: new states, rules, money, routing, trust, or failure modes.
 6. Services, signals, parameters: The implementation pieces: code that runs, events that move between authorities, and tunable values like thresholds, caps, and time windows.
 
-## 5. Dissecting an OS like a cockroach
+## 5. Dissecting an OS like courier tracking
 
-An OS is not any big feature. An OS is the official owner of one durable business truth. If it only calculates, routes, displays, stores, or implements something, it is probably not an OS.
+Think of an OS like the official tracking page for one courier parcel. It knows the current status, accepts only valid scans, blocks nonsense jumps, and keeps the history.
 
 Simple test:
 
-- Does it own truth and lifecycle? If yes, it may be an OS. If no, it is more likely a spec, service, parameter, contract, renderer, or subsystem.
-- OS = official truth owner + legal states + allowed moves + clear handoffs.
+- Is there one official tracking page? If everyone checks this page to know the parcel status, it is acting like an OS. If it only scans, prints, calculates, or displays, it is probably not an OS.
+- OS = official tracking page + valid statuses + scan rules + clear handoffs.
 
-The page shows this as a cockroach anatomy specimen: the head is owned truth, the body is the state machine, the legs are inputs and outputs, the shell is invariants, and the base plate is the audit trail.
+The page shows this as a courier tracking station: one parcel moves through scanner gates on a conveyor, the official tracking page shows the current status, a guard blocks impossible jumps, settings tune behavior, and the scan history explains every change.
 
 Essential attributes of a Wiom OS:
 
-- Owned truth: The one fact this OS is responsible for. Example: connection state, device custody, payout entitlement.
-- Object: The thing being governed: customer connection, CSP, NetBox, complaint, wallet, or access entitlement.
-- States: The official buckets the object can be in. One current state at a time, with names other OSes can reference.
-- Transitions: The legal moves between states. The OS must say what can move, when, and why.
-- Guards: The blockers that stop illegal moves. If a move breaks the rule, the guard blocks it.
-- Levers: The authorized actions the OS can take. If the lever is not listed, the OS cannot improvise it.
-- Inputs: The signals this OS is allowed to read from other OSes. Hidden dependencies are not allowed.
-- Outputs: The events or truth this OS sends downstream when something changes.
-- Invariants: The never-break rules. Example: one NetBox cannot be officially held by two CSPs at once.
-- Non-goals: The boundaries: what this OS explicitly does not own, so it does not become a secret mega-OS.
-- Parameters: The tunable numbers: thresholds, caps, retry limits, windows, and timeouts.
-- Audit trail: The evidence needed to explain why a state changed or why a decision happened.
+- Owned truth: The tracking page owns the answer: where is this parcel right now? In Wiom, this is one official business fact.
+- Object: The parcel is the object. In Wiom, the object could be a customer connection, CSP, NetBox, complaint, wallet, or entitlement.
+- States: States are parcel statuses: booked, picked up, in transit, out for delivery, delivered. One current status at a time.
+- Transitions: Transitions are valid scans that move the parcel forward, like picked up to in transit, or in transit to out for delivery.
+- Guards: Guards stop nonsense: you cannot mark a parcel delivered before it was picked up. Bad move, blocked.
+- Levers: Levers are allowed buttons: reschedule, reassign, hold, cancel, escalate. If the button is not listed, do not improvise.
+- Inputs: Inputs are things the tracking page is allowed to read: address, pickup scan, hub scan, rider assignment, payment signal.
+- Outputs: Outputs are what it tells others: send SMS, assign rider, update customer app, tell support the parcel is delayed.
+- Invariants: Invariants are never-break rules: one tracking ID means one parcel; one parcel cannot be delivered to two homes.
+- Non-goals: Non-goals say what this page does not own. It tracks the parcel; it does not manufacture boxes or settle rider salary.
+- Parameters: Parameters are tunable numbers: max retry attempts, delivery window, delay threshold, hub wait time, escalation timeout.
+- Audit trail: Audit trail is scan history: who scanned it, where, when, and why the status changed. No mystery edits.
 
 ## 6. The real OS authorities people are confused by
 

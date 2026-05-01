@@ -216,32 +216,33 @@
         <section class="anatomy-brief" aria-labelledby="anatomyBriefTitle">
           <div class="anatomy-brief__header">
             <p class="eyebrow">OS anatomy</p>
-            <h2 id="anatomyBriefTitle">5. Dissecting an OS like a cockroach</h2>
+            <h2 id="anatomyBriefTitle">5. Dissecting an OS like courier tracking</h2>
             <p>
-              An OS is not any big feature. An OS is the official owner of one
-              durable business truth. If it only calculates, routes, displays,
-              stores, or implements something, it is probably not an OS.
+              Think of an OS like the official tracking page for one courier
+              parcel. It knows the current status, accepts only valid scans,
+              blocks nonsense jumps, and keeps the history.
             </p>
           </div>
 
           <div class="anatomy-layout" aria-label="Essential attributes of a Wiom OS">
             <article class="anatomy-specimen">
-              <div class="cockroach-stage" id="cockroachStage" aria-label="Three.js cockroach anatomy illustration">
-                <p class="cockroach-caption">
-                  Body = state machine. Legs = inputs and outputs. Shell = invariants.
+              <div class="parcel-stage" id="parcelStage" aria-label="Three.js courier tracking analogy illustration">
+                <p class="parcel-caption">
+                  One parcel. One tracking page. Every scan must move it to a valid next status.
                 </p>
               </div>
 
               <div class="anatomy-specimen__copy">
                 <span>Simple test</span>
-                <h3>Does it own truth and lifecycle?</h3>
+                <h3>Is there one official tracking page?</h3>
                 <p>
-                  If yes, it may be an OS. If no, it is more likely a spec,
-                  service, parameter, contract, renderer, or subsystem.
+                  If everyone checks this page to know the parcel status, it is
+                  acting like an OS. If it only scans, prints, calculates, or
+                  displays, it is probably not an OS.
                 </p>
                 <strong>
-                  OS = official truth owner + legal states + allowed moves + clear
-                  handoffs.
+                  OS = official tracking page + valid statuses + scan rules +
+                  clear handoffs.
                 </strong>
               </div>
             </article>
@@ -250,62 +251,62 @@
               <article>
                 <span>01</span>
                 <h3>Owned truth</h3>
-                <p>The one fact this OS is responsible for. Example: connection state, device custody, payout entitlement.</p>
+                <p>The tracking page owns the answer: where is this parcel right now? In Wiom, this is one official business fact.</p>
               </article>
               <article>
                 <span>02</span>
                 <h3>Object</h3>
-                <p>The thing being governed: customer connection, CSP, NetBox, complaint, wallet, or access entitlement.</p>
+                <p>The parcel is the object. In Wiom, the object could be a customer connection, CSP, NetBox, complaint, wallet, or entitlement.</p>
               </article>
               <article>
                 <span>03</span>
                 <h3>States</h3>
-                <p>The official buckets the object can be in. One current state at a time, with names other OSes can reference.</p>
+                <p>States are parcel statuses: booked, picked up, in transit, out for delivery, delivered. One current status at a time.</p>
               </article>
               <article>
                 <span>04</span>
                 <h3>Transitions</h3>
-                <p>The legal moves between states. The OS must say what can move, when, and why.</p>
+                <p>Transitions are valid scans that move the parcel forward, like picked up to in transit, or in transit to out for delivery.</p>
               </article>
               <article>
                 <span>05</span>
                 <h3>Guards</h3>
-                <p>The blockers that stop illegal moves. If a move breaks the rule, the guard blocks it.</p>
+                <p>Guards stop nonsense: you cannot mark a parcel delivered before it was picked up. Bad move, blocked.</p>
               </article>
               <article>
                 <span>06</span>
                 <h3>Levers</h3>
-                <p>The authorized actions the OS can take. If the lever is not listed, the OS cannot improvise it.</p>
+                <p>Levers are allowed buttons: reschedule, reassign, hold, cancel, escalate. If the button is not listed, do not improvise.</p>
               </article>
               <article>
                 <span>07</span>
                 <h3>Inputs</h3>
-                <p>The signals this OS is allowed to read from other OSes. Hidden dependencies are not allowed.</p>
+                <p>Inputs are things the tracking page is allowed to read: address, pickup scan, hub scan, rider assignment, payment signal.</p>
               </article>
               <article>
                 <span>08</span>
                 <h3>Outputs</h3>
-                <p>The events or truth this OS sends downstream when something changes.</p>
+                <p>Outputs are what it tells others: send SMS, assign rider, update customer app, tell support the parcel is delayed.</p>
               </article>
               <article>
                 <span>09</span>
                 <h3>Invariants</h3>
-                <p>The never-break rules. Example: one NetBox cannot be officially held by two CSPs at once.</p>
+                <p>Invariants are never-break rules: one tracking ID means one parcel; one parcel cannot be delivered to two homes.</p>
               </article>
               <article>
                 <span>10</span>
                 <h3>Non-goals</h3>
-                <p>The boundaries: what this OS explicitly does not own, so it does not become a secret mega-OS.</p>
+                <p>Non-goals say what this page does not own. It tracks the parcel; it does not manufacture boxes or settle rider salary.</p>
               </article>
               <article>
                 <span>11</span>
                 <h3>Parameters</h3>
-                <p>The tunable numbers: thresholds, caps, retry limits, windows, and timeouts.</p>
+                <p>Parameters are tunable numbers: max retry attempts, delivery window, delay threshold, hub wait time, escalation timeout.</p>
               </article>
               <article>
                 <span>12</span>
                 <h3>Audit trail</h3>
-                <p>The evidence needed to explain why a state changed or why a decision happened.</p>
+                <p>Audit trail is scan history: who scanned it, where, when, and why the status changed. No mystery edits.</p>
               </article>
             </div>
           </div>
