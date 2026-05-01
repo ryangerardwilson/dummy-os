@@ -61,22 +61,18 @@ button {
 
 .utility-bar {
   position: sticky;
-  top: 0;
+  top: 8px;
   z-index: 20;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   width: 100%;
-  min-height: 54px;
+  min-height: 28px;
   justify-self: stretch;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(17, 17, 17, 0.08);
-  background:
-    linear-gradient(180deg, rgba(247, 247, 248, 0.96), rgba(247, 247, 248, 0.82)),
-    rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(18px);
-  transition: transform 220ms ease, opacity 220ms ease, border-color 220ms ease;
+  padding: 10px 0 2px;
+  background: transparent;
+  transition: transform 220ms ease, opacity 220ms ease;
   will-change: transform, opacity;
 }
 
@@ -118,25 +114,23 @@ button {
 
 .copy-markdown-button,
 .modal-close-button {
-  border: 1px solid rgba(17, 17, 17, 0.14);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.58);
-  color: var(--ink);
   cursor: pointer;
-  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease;
+  transition: transform 180ms ease, color 180ms ease, opacity 180ms ease;
 }
 
 .copy-markdown-button {
-  padding: 8px 12px;
+  padding: 0 0 2px;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  border-radius: 0;
+  background: transparent;
+  color: var(--accent);
   font-size: 0.58rem;
 }
 
-.copy-markdown-button:hover,
-.modal-close-button:hover {
+.copy-markdown-button:hover {
   transform: translateY(-1px);
-  border-color: rgba(229, 23, 143, 0.48);
-  background: rgba(229, 23, 143, 0.08);
-  color: var(--accent);
+  opacity: 0.72;
 }
 
 .masthead {
@@ -906,9 +900,16 @@ h1 {
 
 .modal-close-button {
   padding: 10px 16px;
+  border: 0;
+  border-radius: 999px;
   font-size: 0.64rem;
   background: var(--accent);
   color: #ffffff;
+}
+
+.modal-close-button:hover {
+  transform: translateY(-1px);
+  opacity: 0.82;
 }
 
 @media (max-width: 1020px) {
@@ -960,7 +961,8 @@ h1 {
   }
 
   .utility-bar {
-    min-height: 50px;
+    top: 6px;
+    min-height: 26px;
   }
 
   .utility-bar__file {
