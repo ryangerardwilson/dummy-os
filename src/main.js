@@ -567,8 +567,8 @@ function initCockroachScene(container) {
   const cockroachScene = new THREE.Scene();
   cockroachScene.fog = new THREE.FogExp2(0x05080d, 0.04);
 
-  const cockroachCamera = new THREE.PerspectiveCamera(46, container.clientWidth / container.clientHeight, 0.1, 1000);
-  cockroachCamera.position.set(0, 7.6, 8.8);
+  const cockroachCamera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 1000);
+  cockroachCamera.position.set(0, 6.4, 6.7);
   cockroachCamera.lookAt(0, 0, 0);
 
   const cockroachRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
