@@ -62,6 +62,7 @@ const palette = {
 
 const stage = document.querySelector('#stage');
 const macroStage = document.querySelector('#macroStage');
+const utilityBar = document.querySelector('.utility-bar');
 const sceneSummary = document.querySelector('#sceneSummary');
 const sceneLesson = document.querySelector('#sceneLesson');
 const sceneButtons = document.querySelectorAll('.view-button');
@@ -104,6 +105,8 @@ const pointer = new THREE.Vector2();
 const interactiveMeshes = [];
 const animated = [];
 let currentSceneId = 'car';
+let lastScrollY = window.scrollY;
+let scrollTicking = false;
 
 addLights();
 addBackdrop();
@@ -121,6 +124,7 @@ modalCloseButtons.forEach((button) => {
 window.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') closeMarkdownModal();
 });
+window.addEventListener('scroll', onWindowScroll, { passive: true });
 
 stage.addEventListener('pointermove', onPointerMove);
 stage.addEventListener('click', () => {
@@ -414,6 +418,30 @@ function buildStateTermScene() {
   });
 
   selectInfo(stateInfo);
+}
+
+function onWindowScroll() {
+  if (scrollTicking) return;
+  scrollTicking = true;
+  requestAnimationFrame(updateUtilityBarVisibility);
+}
+
+function updateUtilityBarVisibility() {
+  const currentScrollY = window.scrollY;
+  const scrolledDown = currentScrollY > lastScrollY + 8;
+  const scrolledUp = currentScrollY < lastScrollY - 4;
+  const nearTop = currentScrollY < 48;
+
+  if (utilityBar) {
+    if (nearTop || scrolledUp) {
+      utilityBar.classList.remove('is-hidden');
+    } else if (scrolledDown && currentScrollY > 120) {
+      utilityBar.classList.add('is-hidden');
+    }
+  }
+
+  lastScrollY = Math.max(currentScrollY, 0);
+  scrollTicking = false;
 }
 
 async function copyMarkdownContext() {
