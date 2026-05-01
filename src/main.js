@@ -107,6 +107,8 @@ const animated = [];
 let currentSceneId = 'car';
 let lastScrollY = window.scrollY;
 let scrollTicking = false;
+let keyboardScrollTargetY = window.scrollY;
+let keyboardScrollFrame = null;
 
 addLights();
 addBackdrop();
@@ -123,6 +125,8 @@ modalCloseButtons.forEach((button) => {
 });
 window.addEventListener('keydown', onGlobalKeydown);
 window.addEventListener('scroll', onWindowScroll, { passive: true });
+window.addEventListener('wheel', cancelKeyboardScroll, { passive: true });
+window.addEventListener('touchstart', cancelKeyboardScroll, { passive: true });
 
 stage.addEventListener('pointermove', onPointerMove);
 stage.addEventListener('click', () => {
@@ -436,10 +440,7 @@ function onGlobalKeydown(event) {
   if (key !== 'j' && key !== 'k') return;
 
   event.preventDefault();
-  window.scrollBy({
-    top: (key === 'j' ? 1 : -1) * Math.max(280, window.innerHeight * 0.72),
-    behavior: 'smooth'
-  });
+  scrollPageWithKeyboard(key === 'j' ? 1 : -1);
 }
 
 function shouldIgnoreKeyboardScroll(event) {
@@ -448,6 +449,43 @@ function shouldIgnoreKeyboardScroll(event) {
   if (!(event.target instanceof HTMLElement)) return false;
 
   return event.target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName);
+}
+
+function scrollPageWithKeyboard(direction) {
+  const distance = Math.max(280, window.innerHeight * 0.72);
+  const baseY = keyboardScrollFrame === null ? window.scrollY : keyboardScrollTargetY;
+  keyboardScrollTargetY = clampScrollY(baseY + direction * distance);
+
+  if (keyboardScrollFrame === null) {
+    keyboardScrollFrame = requestAnimationFrame(animateKeyboardScroll);
+  }
+}
+
+function animateKeyboardScroll() {
+  const currentY = window.scrollY;
+  const deltaY = keyboardScrollTargetY - currentY;
+
+  if (Math.abs(deltaY) < 1) {
+    window.scrollTo(0, keyboardScrollTargetY);
+    keyboardScrollFrame = null;
+    return;
+  }
+
+  window.scrollTo(0, currentY + deltaY * 0.2);
+  keyboardScrollFrame = requestAnimationFrame(animateKeyboardScroll);
+}
+
+function cancelKeyboardScroll() {
+  if (keyboardScrollFrame !== null) {
+    cancelAnimationFrame(keyboardScrollFrame);
+    keyboardScrollFrame = null;
+  }
+  keyboardScrollTargetY = window.scrollY;
+}
+
+function clampScrollY(scrollY) {
+  const maxScrollY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  return Math.min(Math.max(scrollY, 0), maxScrollY);
 }
 
 function updateUtilityBarVisibility() {
