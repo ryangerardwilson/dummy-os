@@ -605,30 +605,49 @@ function initParcelScene(container) {
   grid.material.transparent = true;
   parcelRoot.add(grid);
 
+  const cycleSpeed = 0.075;
+  const parcelStartX = -4.45;
+  const parcelEndX = 4.05;
+  const beltLength = 9.2;
+  const beltTopY = 0.29;
+  const slatSpacing = 0.64;
+  const rollerRadius = 0.09;
+  const beltSpeed = (parcelEndX - parcelStartX) * cycleSpeed;
+  const scannerGateXs = [-3.05, -0.45, 2.15];
+  const statusThresholds = [parcelStartX, ...scannerGateXs];
   const beltRollers = [];
+  const beltSlats = [];
   const statusLights = [];
-  const belt = box(9.2, 0.16, 2.45, palette.asphalt, { y: 0.1, z: 0.35, opacity: 0.84 });
+  const belt = box(9.2, 0.22, 2.45, palette.asphalt, { y: 0.18, z: 0.35, opacity: 0.84 });
   parcelRoot.add(belt);
-  parcelRoot.add(box(9.4, 0.1, 0.12, palette.teal, { y: 0.25, z: -0.9, opacity: 0.52 }));
-  parcelRoot.add(box(9.4, 0.1, 0.12, palette.teal, { y: 0.25, z: 1.6, opacity: 0.52 }));
+  parcelRoot.add(box(9.4, 0.1, 0.12, palette.teal, { y: 0.36, z: -0.9, opacity: 0.52 }));
+  parcelRoot.add(box(9.4, 0.1, 0.12, palette.teal, { y: 0.36, z: 1.6, opacity: 0.52 }));
 
   for (let x = -4.1; x <= 4.1; x += 0.75) {
-    const roller = cylinder(0.09, 2.25, '#61727c', { x, y: 0.22, z: 0.35, rotX: Math.PI / 2 });
+    const roller = cylinder(rollerRadius, 2.25, '#61727c', { x, y: 0.18, z: 0.35, rotX: Math.PI / 2 });
     beltRollers.push(roller);
     parcelRoot.add(roller);
   }
 
+  for (let x = -4.5; x <= 4.5; x += slatSpacing) {
+    const slat = box(0.08, 0.035, 2.12, palette.teal, { x, y: beltTopY + 0.03, z: 0.35, opacity: 0.42 });
+    slat.userData.baseX = x;
+    beltSlats.push(slat);
+    parcelRoot.add(slat);
+  }
+
   const parcel = new THREE.Group();
   parcelRoot.add(parcel);
-  const carton = box(1.65, 0.9, 1.25, palette.paper, { y: 0.68 });
+  const cartonCenterY = beltTopY + 0.45;
+  const carton = box(1.65, 0.9, 1.25, palette.paper, { y: cartonCenterY });
   parcel.add(carton);
-  parcel.add(box(1.72, 0.08, 0.1, palette.yellow, { y: 1.15, z: 0, opacity: 0.82 }));
-  parcel.add(box(0.12, 0.92, 1.32, palette.yellow, { y: 0.68, z: 0, opacity: 0.72 }));
-  parcel.add(box(0.72, 0.46, 0.055, palette.white, { x: -0.22, y: 0.72, z: -0.66 }));
+  parcel.add(box(1.72, 0.08, 0.1, palette.yellow, { y: cartonCenterY + 0.47, z: 0, opacity: 0.82 }));
+  parcel.add(box(0.12, 0.92, 1.32, palette.yellow, { y: cartonCenterY, z: 0, opacity: 0.72 }));
+  parcel.add(box(0.72, 0.46, 0.055, palette.white, { x: -0.22, y: cartonCenterY + 0.04, z: -0.66 }));
   [-0.42, -0.28, -0.14, 0.08].forEach((x, index) => {
-    parcel.add(box(0.04, 0.34 - index * 0.035, 0.06, '#111111', { x, y: 0.72, z: -0.7 }));
+    parcel.add(box(0.04, 0.34 - index * 0.035, 0.06, '#111111', { x, y: cartonCenterY + 0.04, z: -0.7 }));
   });
-  addMacroLabel(parcel, 'PARCEL = OBJECT', 0, 1.45, 0, 'label label--parcel');
+  addMacroLabel(parcel, 'PARCEL = OBJECT', 0, cartonCenterY + 0.78, 0, 'label label--parcel');
 
   const scannerBeam = box(0.08, 1.35, 2.16, palette.teal, { x: -0.45, y: 0.95, z: 0.35, opacity: 0.24 });
   parcelRoot.add(scannerBeam);
@@ -698,17 +717,27 @@ function initParcelScene(container) {
       parcelLabelRenderer.setSize(container.clientWidth, container.clientHeight);
     },
     tick(elapsed) {
-      const progress = loopProgress(elapsed, 0.075);
-      const activeStatus = Math.min(statusLights.length - 1, Math.floor(progress * statusLights.length));
-      parcel.position.x = THREE.MathUtils.lerp(-3.75, 2.65, progress);
-      parcel.position.y = Math.sin(elapsed * 3.8) * 0.025;
+      const progress = loopProgress(elapsed, cycleSpeed);
+      const parcelX = THREE.MathUtils.lerp(parcelStartX, parcelEndX, progress);
+      const activeStatus = statusThresholds.filter((threshold) => parcelX >= threshold).length - 1;
+      const nearestGateX = scannerGateXs.reduce((nearest, gateX) => (
+        Math.abs(parcelX - gateX) < Math.abs(parcelX - nearest) ? gateX : nearest
+      ), scannerGateXs[0]);
+      const scannerDistance = Math.abs(parcelX - nearestGateX);
+      parcel.position.x = parcelX;
+      parcel.position.y = Math.sin(elapsed * 17) * 0.005;
       parcel.rotation.y = Math.sin(elapsed * 0.9) * 0.035;
       parcelRoot.rotation.y = Math.sin(elapsed * 0.22) * 0.06;
       trackingScreen.rotation.y = -0.28 + Math.sin(elapsed * 0.72) * 0.025;
-      scannerBeam.material.opacity = 0.18 + Math.sin(elapsed * 5.2) * 0.08;
+      scannerBeam.position.x = nearestGateX;
+      scannerBeam.material.opacity = scannerDistance < 0.48 ? 0.38 : 0.12;
       guard.rotation.z = -0.42 + Math.sin(elapsed * 1.4) * 0.035;
+      beltSlats.forEach((slat) => {
+        slat.position.x = wrapRange(slat.userData.baseX + elapsed * beltSpeed, -beltLength / 2, beltLength / 2);
+      });
       beltRollers.forEach((roller) => {
-        roller.rotation.z = elapsed * 2.5;
+        roller.rotation.x = Math.PI / 2;
+        roller.rotation.z = -elapsed * (beltSpeed / rollerRadius);
       });
       statusLights.forEach((light, index) => {
         const active = index <= activeStatus;
@@ -719,6 +748,11 @@ function initParcelScene(container) {
       parcelLabelRenderer.render(parcelScene, parcelCamera);
     }
   };
+}
+
+function wrapRange(value, min, max) {
+  const range = max - min;
+  return ((((value - min) % range) + range) % range) + min;
 }
 
 function initMacroScene(container) {

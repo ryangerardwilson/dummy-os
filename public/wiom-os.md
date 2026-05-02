@@ -116,7 +116,7 @@ Simple test:
 - Is there one official tracking page? If everyone checks this page to know the parcel status, it is acting like an OS. If it only scans, prints, calculates, or displays, it is probably not an OS.
 - OS = official tracking page + valid statuses + scan rules + clear handoffs.
 
-The page shows this as a courier tracking station: one parcel moves through scanner gates on a conveyor, the official tracking page shows the current status, a guard blocks impossible jumps, settings tune behavior, and the scan history explains every change.
+The page shows this as a courier tracking station: one parcel moves one way through scanner gates on a conveyor, the official tracking page shows the current status, a guard blocks impossible jumps, settings tune behavior, and the scan history explains every change.
 
 Essential attributes of a Wiom OS:
 
